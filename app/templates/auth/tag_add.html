@@ -1,0 +1,73 @@
+{%extends "auth/newbase.html"%}
+{% import "auth/_macros.html" as macros %}
+{%block title%}
+新增标签
+{%endblock%}
+{%block sendio%}
+{%endblock%}
+{%block head_css%}
+{{super()}}
+<link rel="stylesheet" href="{{url_for('static', filename='css/tag.css')}}">
+<link rel="stylesheet" href="../../static/css/plugins/sweetalert/sweetalert.css">
+<link rel="stylesheet" href="{{url_for('static', filename='css/actor.css')}}">
+{%endblock%}
+{% block head_script %}
+{{super()}}
+
+<script src="../../static/js/plugins/sweetalert/sweetalert.min.js"></script>
+{%endblock%}
+{%block page_content%}
+
+<form class="form-horizontal" method="POST">
+    <div class="col-md-2">
+        <div class="box">
+            <div class="file-manager">
+                {{ form.btnSubmit(**{'class':'btn btn-primary btn-block'})}}
+
+                <div class="line"></div>
+                <h5>操作</h5>
+                <ul class="folder-list">
+                    <li><a href="javascript:history.go(-1);"><i class="glyphicon glyphicon-share-alt"></i>返回</a></li>
+                </ul>
+                <h5>导航</h5>
+                <ul class="folder-list">
+                    <li><a href="{{url_for('auth.list_video')}}"><i class="glyphicon glyphicon-cd"></i>视频</a></li>
+                    <li><a href="{{url_for('auth.Tag_list')}}"><i class="glyphicon glyphicon-tags"></i>标签</a></li>
+                    <li><a href="{{url_for('auth.list_actor')}}"><i class="glyphicon glyphicon-user"></i>演员</a></li>
+                    <li><a href="{{url_for('img.list_photo')}}"><i class="glyphicon glyphicon-picture"></i>图片</a></li>
+                    <li><a href="{{url_for('auth.diskshow')}}"><i class="glyphicon glyphicon-cog"></i>设置</a></li>
+                </ul>
+            </div>
+        </div>
+    
+    </div>
+    
+    <div class="col-md-10">
+        <div class="box">
+            <div class="row">
+                <div style="background-color: white; padding: 10px;">
+                    <div class="maincontrol">
+                        
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">名称</label>
+                                <div class="col-sm-3">
+                                        {{ form.txtTitle(**{'class':'form-control'})}}
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">排序</label>
+                                <div class="col-sm-3">
+                                        {{ form.txtSortId(**{'class':'form-control','value':'99'})}}
+                                </div>
+                            </div>
+
+                            {{ form.hidden_tag() }}
+                   
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+{%endblock%}
+

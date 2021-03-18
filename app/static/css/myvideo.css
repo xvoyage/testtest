@@ -1,0 +1,365 @@
+.videobg{
+    /* background:black; */
+    /* margin: 20px 0px; */
+    /* height: 600px; */
+    text-align: center;
+    position: relative;
+    background-color: #fff;
+    padding: 15px;
+}
+.maincontent{
+    padding: 0px 50px;
+}
+
+.bgleft{
+    position: absolute;
+    width: 366px;
+    height: 600px;
+    top: 0px;
+    left: 2px;
+    /* background-color: red; */
+    /* background-size:50% 100%; */
+    background-repeat: no-repeat;
+    background-position: top right;
+
+}
+
+.bgright{
+    position: absolute;
+    width: 360px;
+    height: 600px;
+    top: 0px;
+    right: 2px;
+    background-size:100% 100%;
+    
+    /* background-color:rebeccapurple; */
+    background-position: top right;
+}
+
+.divlabel{
+    display: inline-block;
+    margin-right: 20px;
+}
+
+.divlabel i{
+    cursor: pointer;
+}
+
+.h4_header{
+    /* text-align: center; */
+    /* background-color: #e6e6e6; */
+    /* padding: 7px; */
+    /* color: aliceblue */
+    margin: 0 0 15px 0;
+    border-left: 8px solid #e6e6e6;
+    padding: 5px;
+}
+
+.add_wd{
+    margin:10px 10px;
+    background-color: #e6e6e6;
+    height: 580px;
+    /* width: 100%; */
+}
+.wd_img{
+    width: 300px;
+    padding: 5px;
+}
+
+
+
+.wd_head{
+    height: 20px;
+    line-height: 20px;
+    text-align: right;
+    padding: 4px 10px;
+    margin-bottom: 5px;
+}
+
+.wd_head a{
+    text-decoration: none;
+    color: black; 
+}
+
+.divtime{
+    width: 300px;
+    height: 30px;
+    line-height: 30px;
+    text-align: left;
+    font-size: 0px;
+    margin-top: 10px;
+}
+
+.wd_main{
+    padding: 0px 20px;
+}
+
+.nullimg{
+    width: 300px;
+    height: 167px;
+    border: 2px dashed #aaa;
+    margin: 5px;
+}
+
+.divtime span{
+    display: inline-block;
+    font-size: 14px;
+    margin-right: 10px;
+
+}
+
+.spaninput{
+    width: 145px;
+    background-color:#fff;
+    padding: 0px 10px;
+}
+
+.upimg{
+    margin-top: 10px;
+}
+
+.beisu a{
+    /* display: inline-block;
+    padding: 2px;
+    border: 1px solid #cccccc;
+    vertical-align: 3px;
+    font-size: 12px; */
+    text-decoration: none;
+    /* background-color: #cccccc;
+    border-radius: 4px;
+    margin-right: 2px; */
+
+}
+
+
+/* .videobg{
+    width: 1284px;
+    max-width: 1344px;
+    max-height: 743px;
+    display: table-cell;
+    vertical-align: middle;
+    padding: 0;
+} */
+
+.videoright{
+    display: table-cell;
+    /* vertical-align: middle; */
+    /* min-width: 400px; */
+    /* height: 743px; */
+    /* background-color: teal; */
+    /* margin: 20px 20px 20px 50px; */
+    padding-left: 40px;
+    overflow: hidden;
+}
+/* .vdmainbd::after{
+    content: '';
+    display: block;
+    clear: both;
+} */
+
+.videoright ul{
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.videoright ul li{
+    margin: 18px 0;
+    padding: 0 5px;
+}
+.videoright ul li::after{
+    content: '';
+    display: block;
+    clear: both;
+}
+.videoright ul img{
+    width: 190px;
+    border-radius: 5px;
+    object-fit: cover;
+    height: 128px;
+}
+.tjleft{
+    /* float: left; */
+    display: table-cell;
+}
+.tjright{
+    /* float: left; */
+    display: table-cell;
+    width: 150px;
+    padding-left: 10px;
+    vertical-align: top;
+}
+
+.tjright_header{
+    /* font-size: 16px; */
+    height: 40px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    cursor: pointer;
+}
+.ritag{
+    height: 45px;
+    overflow: hidden;
+}
+.videoright a{
+    text-decoration: none;
+}
+
+.bofg{
+    background-color: #cccccc;
+    padding: 6px;
+    border-radius: 4px;
+    display: inline-block;
+}
+body{
+    background-color: #f0f3f4;
+}
+
+.wdf_img{
+    background-color: white;
+    padding: 15px;
+}
+
+.vdmainbd{
+    position: relative;
+}
+.opvd{
+    position: absolute;
+    right: -61px;
+    top: 15%;
+    /* border: 1px solid white; */
+    background-color: white;
+
+}
+.opvd ul{
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.opvd ul li{
+    padding: 10px;
+    border-bottom: 1px solid #f0f3f4;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+    color: gray;
+    transition: all 0.2s;
+}
+.opvd ul li:last-child{
+    border-bottom: unset;
+}
+.opvd i{
+    font-size: 14px;
+    vertical-align: -1px;
+    margin-right: 3px;
+
+}
+.opvd ul li:hover{
+    background-color: rgb(245, 245, 245);
+    color: gray;
+}
+
+.picList{
+    list-style: none;
+    margin: 0;
+    padding: 0 15px;
+}
+.picList li{
+    width: 160px;
+    float: left;
+    margin:10px;
+    border: 1px solid #f0f3f4;
+    padding: 5px;
+    position: relative;
+}
+.imgwai{
+    width: 150px;
+    height: 84px;
+    overflow: hidden;
+}
+.picList img{
+    width: 150px;
+    height: 84px;
+    /* object-fit: cover; */
+    cursor: pointer;
+    transition: all 0.3s;
+}
+.picList img:hover{
+    transform: scale(1.1);
+}
+.picList::after{
+    display: block;
+    content: '';
+    clear: both;
+}
+.pictime{
+    position: absolute;
+    left: 5px;
+}
+.de_wd{
+    margin-left: 100px;
+    font-size: 12px;
+    text-align: right;
+    /* padding-right: 5px; */
+}
+.de_wd i {
+    vertical-align:middle;
+    cursor: pointer;
+}
+
+.imgprocess{
+    margin: 10px 0;
+    background-color: white;
+    padding: 15px;
+
+}
+.progress-bar-success{
+    font-size: 20px;
+    padding-top: 13px;
+}
+
+.vjs-text-track-cue > div{
+    background-color: unset !important;
+}
+
+.video_message{
+    height: 75px;
+    overflow: hidden;
+    position: relative;
+    transition: all 0.3s;
+}
+.more{
+    position: absolute;
+    height: 70px;
+    width: 70px;
+    right: 0;
+    z-index: 999;
+    top: 25px;
+    /* text-align: center; */
+    /* vertical-align: middle; */
+    text-align: center;
+}
+.more span{
+    background-color: grey;
+    border-radius: 50%;
+    width: 6px;
+    height: 6px;
+    display: inline-block;
+}
+.more a:hover , .more a:active {
+    text-decoration: none;
+}
+.more a:visited{
+    text-decoration: none;
+}
+.hidentabel{
+    visibility: hidden;
+}
+.tabelopen{
+    height: unset !important;
+}

@@ -1,0 +1,165 @@
+{%extends "auth/newbase.html"%}
+{% import "auth/_macros.html" as macros %}
+{%block title%}
+标签管理
+{%endblock%}
+{%block sendio%}
+{%endblock%}
+{%block head_css%}
+{{super()}}
+<!-- <link rel="stylesheet" href="{{url_for('static', filename='css/tag.css')}}"> -->
+<link rel="stylesheet" href="../../static/css/plugins/sweetalert/sweetalert.css">
+<link rel="stylesheet" href="{{url_for('static', filename='css/actor.css')}}">
+{%endblock%}
+{% block head_script %}
+{{super()}}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+<script src="../../static/js/plugins/sweetalert/sweetalert.min.js"></script>
+{%endblock%}
+{%block page_content%}
+<script type="text/javascript">
+    var comm_select_all = '全选';
+    var comm_cancel_all = '取消';
+
+    function checkAll(chkobj) {
+        if ($(chkobj).text().trim() == comm_select_all.trim()) {
+            $(chkobj).children("span").text(comm_cancel_all);
+            $(".checkall input:enabled").prop("checked", true);
+        } else {
+            $(chkobj).children("span").text(comm_select_all);
+            $(".checkall input:enabled").prop("checked", false);
+        }
+    }
+
+
+    function myalert(deid){
+        swal({
+            title: "您确定要删除这条信息吗",
+            text: "删除后将无法恢复，请谨慎操作！",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "是的，我要删除！",
+            cancelButtonText: "让我再考虑一下…",
+            closeOnConfirm: false,
+            closeOnCancel: false
+        },
+            function (isConfirm) {
+                if (isConfirm) {
+                    swal("删除成功！", "您已经永久删除了这条信息。", "success");
+                    setTimeout(function(){
+                        window.location.href="/t_delete?id="+deid
+                    },1000);
+                } else {
+                    swal("已取消", "您取消了删除操作！", "error");
+                }
+            });
+    }
+
+</script>
+    <div class="col-md-2">
+        <div class="box">
+            <div class="file-manager">
+                <a href="{{url_for('auth.add_arctor')}}" class="btn btn-primary btn-block">新增</a>
+
+                <div class="line"></div>
+                <h5>操作</h5>
+                <ul class="folder-list">
+                    <li><a href="javascript:history.go(-1);"><i class="glyphicon glyphicon-share-alt"></i>返回</a></li>
+                    <li><a href="#"><i class="fa fa-heart"></i><span>喜欢</span></a>
+                    </li>
+                </ul>
+                <h5 class="tag-title">查询</h5>
+                            <form method="POST" action="/alist">
+                                <div class="input-group">
+                                    <!-- <input type="text" class="form-control input-sm" name="search" placeholder="Search..."> -->
+                                    <select name="act"  class="form-control input-sm select2" style="width: 100%;"> 
+                                        <option value="-1">Search</option>
+                                        {%for i in actors%}
+                                        <option value="{{i[0]}}">{{i[1]}}</option>
+                                        {%endfor%}
+                                    </select>
+                                    <div class="input-group-btn">
+                                        <button type="submit" class="btn btn-sm btn-primary">
+                                            搜索
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                <h5>导航</h5>
+                <ul class="folder-list">
+                    <li><a href="{{url_for('auth.list_video')}}"><i class="glyphicon glyphicon-cd"></i>视频</a></li>
+                    <li><a href="{{url_for('auth.Tag_list')}}"><i class="glyphicon glyphicon-tags"></i>标签</a></li>
+                    <li><a href="{{url_for('auth.list_actor')}}"><i class="glyphicon glyphicon-user"></i>演员</a></li>
+                    <li><a href="{{url_for('img.list_photo')}}"><i class="glyphicon glyphicon-picture"></i>图片</a></li>
+                    <li><a href="{{url_for('auth.diskshow')}}"><i class="glyphicon glyphicon-cog"></i>设置</a></li>
+                </ul>
+            </div>
+        </div>
+    
+    </div>
+    
+    <div class="col-md-10">
+        <div>
+            <div class="row">
+                <form id="form1" action="" name="form1" method="POST">
+                    <!-- <div class="row"> -->
+                        <div class="col-sm-12">
+                            {% for c in taglist %}
+                            <div class="file-box" style="cursor: pointer;">
+                                <div class="file">
+                                    <div class="ibox-content text-center">
+                                        <!-- <h1>奔波儿灞</h1> -->
+                                        <div class="m-b-sm">
+                                            <a href="{{url_for('auth.showactor',id=c.id)}}">
+                                                <img alt="image" class="img-circle" src="{%if c.imgurl%}{{c.imgurl}}{%else%}../../static/upload/a8.jpg{%endif%}" style="width: 100%;">
+                                            </a>
+                                        </div>
+                                        <p>{{c.name}}</p>
+                                        <div class="text-center">
+                                            <!-- <a class="btn mybtn btn-white btn-xs checkall"><input type="checkbox" name="checked_arry"></a> -->
+                                            <a class="btn mybtn btn-primary btn-xs" onclick="heartlike(this,'{{c.id}}')" {%if c.love %} style="color: red !important;"{%endif%} ><i class="fa fa-heart"></i> </a>
+                                            <a href="{{url_for('auth.edit_actor', id = c.id)}}" class="btn mybtn btn-primary btn-xs" title="编辑"><i class="fa fa-pencil-square-o"></i> </a>
+                                            <!-- <a href="{{url_for('auth.delete_actor', id = c.id)}}" onclick="javascript:return myalert()" class="btn mybtn btn-primary btn-xs" title="删除"><i class="fa fa-trash"></i> </a> -->
+                                            <a  onclick="myalert('{{c.id}}')" class="btn mybtn btn-primary btn-xs" title="删除"><i class="fa fa-trash"></i> </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {%endfor%}
+                            
+    
+                        </div>
+                    <!-- </div> -->
+                    {{ macros.pagination_widget(pagination,'auth.list_actor')}}
+                    </form>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        $('.select2').select2(
+            {
+                placeholder : '请选择'
+            }
+        );
+        
+        function heartlike(tag,id){
+            var data = {'id': id};
+            $.get("{{url_for('auth.actor_like')}}", data, function(data){
+                if(data.status){
+                        
+                    $(tag).attr('style','color:red !important')
+                }
+                else{
+                    $(tag).attr('style','')
+                }
+    
+            })
+        }
+    
+    
+    </script>
+
+{%endblock%}
+

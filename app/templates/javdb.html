@@ -1,0 +1,142 @@
+{% extends "auth/newbase.html" %}
+{% import "auth/_macros.html" as macros %}
+{% block head_script %}
+{{ super() }}
+<link rel='stylesheet' type='text/css' href="{{url_for('static', filename='css/movie.css')}}">
+<!-- <script src="{{url_for('static', filename='js/jquery.masonry.min.js')}}"></script> -->
+<link rel="stylesheet" href="{{url_for('static', filename='css/viewer.min.css')}}">
+<script type="text/javascript" src="{{url_for('static', filename='js/viewer.min.js')}}"></script>
+<link href="//cdn.bootcss.com/video.js/7.0.0-alpha.1/alt/video-js-cdn.css" rel="stylesheet">
+<link rel='stylesheet' type='text/css' href="{{url_for('static', filename='css/javdb.css')}}">
+<script src="//cdn.bootcss.com/video.js/7.0.0-alpha.1/video.min.js"></script>
+{% endblock %}
+
+
+{% block page_content %}
+
+
+<div style="width: 1170px; padding-right: 15px;padding-left: 15px;margin-right: auto;margin-left: auto;">
+    <h3>{{javdbmd.title}}</h3>
+    <div class="row movie">
+<div class="col-md-9 screencap">
+{%if not javdbmd.videosrc%}
+<a class="bigImage" href="{{javdbmd.samle_img}}">
+    <img src="{{javdbmd.samle_img}}" title="{{javdbmd.title}}">
+</a>
+{%else%}
+<video id='mvideo' class="video-js vjs-big-play-centered vjs-default-skin vjs-fluid" controls preload="auto"   data-setup="{}"
+			poster="{{javdbmd.samle_img}}" preload="auto">
+		<source src="{{javdbmd.videosrc}}" type="video/mp4">
+</video>
+<!-- <a class="bigImage" href="{{javdbmd.samle_img}}">
+    <img src="{{javdbmd.samle_img}}" title="{{javdbmd.title}}">
+</a> -->
+{%endif%}
+</div>
+<div class="col-md-3 info">
+<p><span class="header">識別碼:</span> <span style="color:#CC0000;">{{javdbmd.fanhao}}</span>
+</p>
+<p><span class="header">發行日期:</span> {{javdbmd.dtime}}</p>
+<p><span class="header">長度:</span> {{javdbmd.durtime}}</p>
+{%if javdbmd.daoyan %}
+    <p><span class="header">導演:</span> <a href="{{javdbmd.daoyan[1]}}">{{javdbmd.daoyan[0]}}</a></p>
+{%endif%}
+{% if javdbmd.pianshang%}
+    <p><span class="header">製作商:</span> <a href="{{javdbmd.pianshang[1]}}">{{javdbmd.pianshang[0]}}</a></p>
+{%endif%}
+{%if javdbmd.faxing%}
+    <p><span class="header">發行商:</span> <a href="{{javdbmd.faxing[1]}}">{{javdbmd.faxing[0]}}</a></p>
+{%endif%}
+<p class="header">類別:</p>
+<p>
+{%if javdbmd.tags%}
+    {%for tag in javdbmd.tags%}
+        <span class="genre"><a href="{{tag[1]}}">{{tag[0]}}</a></span>
+    {%endfor%}
+{%else%}
+    <span class="genre">N/A</span>
+{%endif%}
+</p>
+<p class="star-show"><span class="header" style="cursor: pointer;">演員</span>:<span class="glyphicon glyphicon-plus" id="star-toggle" style="cursor: pointer;"></span></p>
+
+<p>
+    {%if javdbmd.actors%}
+        {%for a in javdbmd.actors%}
+            <span class="genre"><a href="{{a[1]}}">{{a[0]}}</a></span>
+        {%endfor%}
+    {%else%}
+        <span class="genre">N/A</span>
+    {%endif%}
+</p>
+
+<p>
+    <a href="{{url_for('main.follow_video',uid=javdbmd.uid)}}" class="btn btn-success" style="width: 100%;">关注</a>
+</p>
+
+</div>
+</div>
+    <h4 id="mag-submit-show" style="cursor: pointer;">磁力連結投稿 <span id="mag-submit-toggle" class="glyphicon glyphicon-plus"></span></h4>
+    <div class="movie" style="padding:12px; margin-top:15px"> 
+        <table class="table table-condensed table-striped table-hover" id="magnet-table" style="margin-bottom:0;">
+            <tbody>
+            <tr style="font-weight:bold;">
+            <td>磁力名稱 <span class="glyphicon glyphicon-magnet"></span></td>
+            <td style="text-align:center;white-space:nowrap">檔案大小</td>
+            <td style="text-align:center;white-space:nowrap">分享日期</td>
+            </tr>
+            {%if javdbmd.magnet%}
+            {%for mg in javdbmd.magnet %}
+            <tr onmouseover="this.style.backgroundColor='#F4F9FD';this.style.cursor='pointer';" onmouseout="this.style.backgroundColor='#FFFFFF'" height="35px" style=" border-top:#DDDDDD solid 1px">
+                <td width="70%" onclick="window.open('{{mg[0]}}','_self')">
+                	<a style="color:#333" rel="nofollow" title="" href="{{mg[0]}}">
+                    {{javdbmd.fanhao}} </a>
+                    {%for t in mg[1]%}
+                        <span class="mgspan">{{t}}</span>
+                    {%endfor%}           	
+                </td>
+                <td style="text-align:center;white-space:nowrap" onclick="window.open('{{mg[0]}}','_self')">
+                	<a style="color:#333" rel="nofollow" title="" href="{{mg[0]}}">
+                    {{mg[2]}}                	</a>
+                </td>
+                <td style="text-align:center;white-space:nowrap" onclick="window.open('{{mg[0]}}','_self')">
+                    <a style="color:#333" rel="nofollow" title="" href="{{mg[0]}}">
+                        {{mg[3]}}
+                	</a>
+                </td>            
+            </tr>
+            {%endfor%}
+            {%endif%}
+		         
+
+		        
+		  
+			<script type="text/javascript">
+			$('#movie-loading').hide();
+			</script>
+        
+        </tbody></table>
+    </div>
+    <h4>樣品圖像</h4>
+    <div id="sample-waterfall">
+        {%for img in  javdbmd.img_list%}
+        <a class="sample-box" href="#">
+            <div class="photo-frame">
+                <img style="object-fit: cover;" data-original="{{img}}" src="{{img}}" title="">
+            </div>
+        </a>
+        {%endfor%}
+    </div>
+    
+</div>
+
+
+
+
+<script>
+    var viewer = new Viewer(document.getElementById('sample-waterfall'), {
+      url: 'data-original'
+    });
+</script>
+
+{% endblock %}
+

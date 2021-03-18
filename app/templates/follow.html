@@ -1,0 +1,191 @@
+{%extends "auth/nbase.html"%}
+{% import "auth/_macros.html" as macros %}
+{%block title%}
+演员管理
+{%endblock%}
+{%block sendio%}
+{%endblock%}
+{%block head_css%}
+{{super()}}
+<link rel="stylesheet" href="{{url_for('static', filename='css/actor.css')}}">
+<link rel="stylesheet" href="../static/css/plugins/sweetalert/sweetalert.css">
+{%endblock%}
+{% block head_script %}
+{{super()}}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+<script src="../static/js/plugins/sweetalert/sweetalert.min.js"></script>
+{%endblock%}
+{%block page_content%}
+<script type="text/javascript">
+    var comm_select_all = '全选';
+    var comm_cancel_all = '取消';
+
+    function checkAll(chkobj) {
+        if ($(chkobj).text().trim() == comm_select_all.trim()) {
+            $(chkobj).children("span").text(comm_cancel_all);
+            $(".checkall input:enabled").prop("checked", true);
+        } else {
+            $(chkobj).children("span").text(comm_select_all);
+            $(".checkall input:enabled").prop("checked", false);
+        }
+    }
+    function submitFrom(path){
+        $('#form1').attr("action", path)
+        $('#form1').submit();
+    }
+
+    function myalert(deid){
+        swal({
+            title: "您确定要删除这条信息吗",
+            text: "删除后将无法恢复，请谨慎操作！",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "是的，我要删除！",
+            cancelButtonText: "让我再考虑一下…",
+            closeOnConfirm: false,
+            closeOnCancel: false
+        },
+            function (isConfirm) {
+                if (isConfirm) {
+                    swal("删除成功！", "您已经永久删除了这条信息。", "success");
+                    setTimeout(function(){
+                        window.location.href="/del_follow?id="+deid
+                    },1000);
+                } else {
+                    swal("已取消", "您取消了删除操作！", "error");
+                }
+            });
+    }
+
+</script>
+<div class="gray-bg">
+    <div class="wrapper wrapper-content">
+        <div class="row">
+            <div class="col-sm-2">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-content">
+                        <div class="file-manager">
+                            <a href="{{url_for('auth.add_arctor')}}" class="btn btn-primary btn-block">新增</a>
+                            <div class="hr-line-dashed"></div>
+                            <h5>操作</h5>
+                            <ul class="folder-list" style="padding: 0">
+                                <!-- <li><a href="{{url_for('auth.list_actor')}}"><i class="fa fa-check-square-o"></i><span>首页</span></a> -->
+                                <li><a href="javascript:;" onclick="checkAll(this)"><i class="fa fa-check-square-o"></i><span>全选</span></a>
+                                
+                                </li>
+                                <li><a href="javascript:;" onclick="submitFrom('/a_delete')"><i class="fa fa-trash-o"></i> <span>删除</span></a>
+                                </li>
+                                <li><a href="#"><i class="fa fa-heart"></i><span>喜欢</span></a>
+                                </li>
+                            </ul>
+                            <h5 class="tag-title">查询</h5>
+                            <form method="POST" action="/alist" class="pull-right mail-search">
+                                <div class="input-group">
+                                    <!-- <input type="text" class="form-control input-sm" name="search" placeholder="Search..."> -->
+                                    <select name="act"  class="form-control input-sm select2" style="width: 200px;"> 
+                                        <option value="-1">Search</option>
+                                        {%for i in actors%}
+                                        <option value="{{i[0]}}">{{i[1]}}</option>
+                                        {%endfor%}
+                                    </select>
+                                    <div class="input-group-btn">
+                                        <button type="submit" class="btn btn-sm btn-primary">
+                                            搜索
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                            <div class="clearfix"></div>
+                            <h5 class="tag-title">导航</h5>
+                            <ul class="folder-list" style="padding: 0">
+                                <li><a href="{{url_for('auth.list_video')}}"><i class="fa fa-tv"></i><span>视频</span></a></li>
+                                <li><a href="{{url_for('img.list_photo')}}"><i class="fa fa-picture-o"></i><span>图片</span></a></li>
+                                <li><a href="{{url_for('auth.diskshow')}}"><i class="fa fa-tachometer"></i><span>控制面板</span></a></li>
+                            </ul>
+                            <h5 class="tag-title">资讯</h5>
+                            <ul class="folder-list" style="padding: 0">
+                                <li><a href="{{url_for('main.javbuslist')}}"><i class="fa fa-comments"></i><span>JavBus</span></a></li>
+                                <li><a href="{{url_for('main.javdb')}}"><i class="fa fa-comments"></i><span>JavDb</span></a></li>
+
+                            </ul>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-10 animated fadeInUp">
+                <form id="form1" action="" name="form1" method="POST">
+                <div class="row">
+                    <div class="col-sm-12">
+                        {% for c in fms %}
+                        <div class="file-box" style="cursor: pointer;">
+                            <div class="file" style="height: 254px;">
+                                <div class="ibox-content text-center">
+                                    <!-- <h1>奔波儿灞</h1> -->
+                                    <div class="m-b-sm">
+                                        <a href="{{c.nlink}}">
+                                            <img alt="image"  src="{{c.img}}" style="width: 100%;">
+                                        </a>
+                                    </div>
+                                    <p style="font-weight: 900;">{{c.name}}</p>
+                                    <p style="overflow: hidden; text-overflow: ellipsis; height: 40px; line-height: 20px; -webkit-line-clamp: 2; display: -webkit-box; -webkit-box-orient: vertical;">{{c.title}}</p>
+                                    <div style="text-align: right;">
+                                        {%if c.status%}
+                                        <a href="#" class="btn mybtn btn-success btn-xs" title="编辑">可下载</a>
+                                        {%endif%}
+                                        <a  onclick="myalert('{{c.id}}')" class="btn mybtn btn-primary btn-xs" title="删除"><i class="fa fa-trash"></i> </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {%endfor%}
+                        
+
+                    </div>
+                </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        $(document).ready(function () {
+            $('.file-box').each(function () {
+                animationHover(this, 'pulse');
+            });
+        });
+    </script>
+
+<script type="text/javascript">
+    $('.select2').select2(
+        {
+            placeholder : '请选择'
+        }
+    );
+    
+    function heartlike(tag,id){
+        var data = {'id': id};
+        $.get("{{url_for('auth.actor_like')}}", data, function(data){
+            if(data.status){
+                    
+                $(tag).attr('style','color:red !important')
+            }
+            else{
+                $(tag).attr('style','')
+            }
+
+        })
+    }
+
+
+</script>
+
+
+</div>
+
+{%endblock%}
+

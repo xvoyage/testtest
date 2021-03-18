@@ -1,0 +1,121 @@
+.header{
+    height: 300px;
+    background-color: #eeeeee;
+    margin: 0px;
+    padding: 0px;
+}
+.content h1{
+
+    font-weight: bold;
+    font-size: 30px;
+}
+.content h2{
+
+    font-weight: bold;
+    font-size: 26px;
+    margin-top: 40px;
+}
+.imgl img{
+    height: 150px;
+    cursor: pointer;
+}
+.grxx p{
+    font-size: 16px;
+}
+.zp img{
+    background-position: 50% 0%;
+    height: 200px;
+    /* width: 150px; */
+    margin-left: -150px;
+}
+.imgbg{
+    height: 200px;
+    width: 150px;
+    overflow: hidden;
+    
+}
+.imgul{
+    list-style: none;
+    margin: 0px;
+    padding: 0px;
+}
+.imgul li{
+    float: left;
+    margin: 10px;
+}
+
+.movices{
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+tr {
+    display: table-row;
+    vertical-align: inherit;
+    border-color: inherit;
+}
+.movices td, .movices th {
+    background: #ccc;
+    padding: 2px;
+    border: 1px #fff solid;
+    text-align: left;
+    font-size: 12px;
+}
+table {
+    display: table;
+    border-collapse: separate;
+    box-sizing: border-box;
+    border-spacing: 2px;
+    border-color: grey;
+}
+
+.imgback{
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0px;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7)
+}
+/* body{
+    overflow: hidden;
+} */
+.leftimg, .rightimg{
+    /* display: table-cell; */
+    height: 100%;
+}
+.rightimg{
+    width: 250px;
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: #fff;
+}
+.leftimg{
+    margin-right: 250px;
+    position: relative;
+    text-align: center;
+    /* vertical-align: middle; */
+}
+.pre, .next{
+    position: absolute;
+    font-size: 40px;
+    line-height: 0;
+    color: #ed008c;
+    padding: 10px;
+    cursor: pointer;
+}
+.pre{
+    top: 50%;
+    left: 0;
+    
+}
+.imgmain{
+    display: inline-block;
+    vertical-align: middle;
+
+}
+.next{
+    top: 50%;
+    right: 0;
+}

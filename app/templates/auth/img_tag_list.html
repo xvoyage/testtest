@@ -1,0 +1,96 @@
+{%extends "auth/base.html"%}
+{% import "auth/_macros.html" as macros %}
+{% block head_script %}
+{{super()}}
+{%endblock%}
+{% block head_css %}
+{{super()}}
+{% endblock %}
+{%block page_content%}
+<script type="text/javascript">
+    var comm_select_all = '全选';
+    var comm_cancel_all = '取消';
+
+    function checkAll(chkobj) {
+        if ($(chkobj).text().trim() == comm_select_all.trim()) {
+            $(chkobj).children("span").text(comm_cancel_all);
+            $(".checkall input:enabled").prop("checked", true);
+        } else {
+            $(chkobj).children("span").text(comm_select_all);
+            $(".checkall input:enabled").prop("checked", false);
+        }
+    }
+
+    function submitFrom(path){
+        $('#form1').attr("action", path)
+        $('#form1').submit();
+    }
+
+</script>
+
+<div class="mainpand">
+        <div class="">
+            <ol class="breadcrumb">
+                <li><a href="#">首页</a></li>
+                <li><a href="{{url_for('auth.list_actor')}}">标签列表</a></li>
+                <li class="active">新增</li>
+            </ol>
+        </div>
+        <div class="">
+                <nav class="nav">
+                    <div class="collapse navbar-collapse">
+                        <ul class="nav navbar-nav">
+                            <a href="{{url_for('img.Imgtag_Add')}}" class="opa btn"><i class="glyphicon glyphicon-plus"></i>新增</a>
+                            <a href="#" class="opa btn" onclick="checkAll(this)"><i class="glyphicon glyphicon-check"></i><span>全选</span></a>
+                            <a href="javascript:;"  class="opa btn" onclick="submitFrom('/it_delete')"><i class="glyphicon glyphicon-trash"></i>删除</a>
+                        </ul>
+                        <ul class="nav navbar-nav navbar-right">
+                            <form class="form-inline">
+                                <div class="form-group  inputSearch">
+                                    <input type="text" class="form-control input-sm" placeholder="Search">
+                                    <a href="#" class="icosearch"><i class="glyphicon glyphicon-search"></i></a>
+                                </div>
+                            </form>
+                        </ul>
+                    </div>
+                </nav>
+        </div>
+        <div class="maincontrol">
+        <form id="form1" action="" name="form1" method="POST">
+           <table class="table table-striped table-hover">
+                <tr class="">
+                    <th width="6%">选择</th>
+                    <th align="left" width="6%">编号</th>
+                    <th align="left">类别名称</th>
+                    <th align="left" width="12%">排序</th>
+                    <th width="12%">操作</th>
+                </tr>
+                {% for c in taglist %}
+                    <tr>
+                        <td>
+                            <label class="chekbox-inline checkall">
+                                    <input id="rptList_ctl01_chkId"  type="checkbox" name="checked_arry" value="{{ c.id }}" />
+                            </label>
+                        </td>
+                        <td>{{ c.id }}</td>
+                        <td>
+                            <a href="{{url_for('auth.list_video',tag=c.id)}}">{{ c.name }}
+                            </a>
+                            <span class="badge" style="margin-left:5px;">{{ c.photos.count()}}</span>
+                        </td>
+                        <td>
+                            {{ c.sortnum }}
+                        </td>
+                        <td>
+                            <a href="{{url_for('img.imgedit_tag', id = c.id)}}">修改</a>
+                            <a href="{{url_for('img.imgtag_delete', id = c.id)}}">删除</a>
+                            
+                        </td>
+                    </tr>
+                {% endfor %}
+           </table>
+           {{ macros.pagination_widget(pagination,'auth.Tag_list')}}
+        </form>
+        </div>
+{%endblock%}
+

@@ -1,0 +1,242 @@
+{% extends "auth/newbase.html" %}
+{% import "auth/_macros.html" as macros %}
+{% block head_script %}
+{{ super() }}
+<link rel='stylesheet' type='text/css' href="{{url_for('static', filename='css/javbusmain.css')}}">
+<link rel='stylesheet' type='text/css' href="{{url_for('static', filename='css/javdb.css')}}">
+<link rel='stylesheet' type='text/css' href="{{url_for('static', filename='css/nmain.css')}}">
+<script src="{{url_for('static', filename='js/jquery.masonry.min.js')}}"></script>
+
+
+{% endblock %}
+{%block sendio%}
+<script type="text/javascript">
+    var socket = io.connect('http://192.168.1.127:80/messagequeue');
+    socket.on('server_response', function(reg){
+        var arrmg = reg.data;
+        if(arrmg){
+            for(i=0; i<arrmg.length; i++){
+                var pid = arrmg[i][0];
+                // var jd = parseInt(parseFloat(arrmg[i][1]) * 100);
+                if(parseInt(pid)> 0){
+                    var jd = parseInt(parseFloat(arrmg[i][1]) * 100);
+                    var jdpre = jd + '%';
+                    // $('#'+pid).attr('aria-valuenow',jd);
+                    // $('#'+pid).attr('style','width:'+jdpre);
+                    // $('#'+pid).text(jdpre);
+                    var stas = arrmg[i][2];
+
+                    if (parseInt(stas) == 0){
+                        var mghtml = '<div class="jdmsg"><p>正在生成视频预览图...</p></dvi>';
+                        $('#'+pid).append(mghtml);
+                    }
+                    if (parseInt(stas) == 1){
+                        $('.jdmsg').append('<p>视频预览图生成完毕...</p>')
+                    }
+                    if (parseInt(stas) == 2){
+                        $('.jdmsg').append('<p>正在处理视频...</p>')
+                    }
+                    if (parseInt(stas) == 3){
+                        $('.jdmsg').append('<p>视频处理完毕...</p>');
+                    }
+
+
+
+                    var prid = 'p'+pid;
+                    var obp = document.getElementById(prid)
+                    if(obp == null){
+                        var html = '<div class="progress" style=" position: absolute; left: 0; bottom: 0px; margin: 0; width: 100%; height: 3px;"><div id ="';
+                        html += prid;
+                        html +='"class="progress-bar progress-bar-success progress-bar-striped" role="progressbar"  aria-valuemin="0" aria-valuemax="100" ></div>';
+                        $('#'+pid).append(html);
+                    }
+                    $('#'+prid).attr('aria-valuenow',jd);
+                    $('#'+prid).attr('style','width:'+jdpre);
+                    $('#'+prid).text(jdpre);
+                    // $('#'+pid);
+                    console.log(jd)
+                    if(jd >= 100 && parseInt(stas) == 3){
+                        // $('#'+pid).children('.jdt').remove()
+                        $('.progress').remove()
+                        $('.jdmsg').remove()
+                    }
+                }
+                else{
+                    spop({
+                        template: arrmg[i][1],
+                        autoclose: 5000
+                    });
+                }
+            }
+        }
+    });
+</script>
+		
+{%endblock%}
+
+
+{% block page_content %}
+<script type="text/javascript">
+    if(/Android|webOS|iPhone|iPod|BlackBerry/i.test(navigator.userAgent)) {
+        window.location.href = "{{url_for('main.mlist_video')}}";
+    } 
+</script>
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        // document.onkeydown = function(event){
+		// 	var e = event || window.event || arguments.callee.caller.arguments[0];
+
+		// 		if (e && e.keyCode == 13){
+        //             submitFrom('/video_list');
+		// 		}
+        // }
+        
+        $(".photo-frame").unbind("mousedown").bind("contextmenu", function (e) {
+            e.preventDefault();
+            return false;
+
+        });
+        $('.photo-frame').unbind("mousedown").bind("mousedown", function(event){
+            if (event.which==3){
+                $('.nopopen').toggleClass("nopopen");
+                $(this).find('.nop').addClass('nopopen');
+            }
+        });
+        $('.nopc').click(function(){
+            $('.nop').removeClass('nopopen')
+        });
+
+
+    })
+
+
+
+    function change_stats(tag,id,index){
+        var data ={
+            'id': id,
+            'stats': index
+        }
+        $.get("{{url_for('auth.cgstats')}}", data, function(data){
+            var pre = $(tag).parent();
+            pre.find('i').each(function(i,val){
+                if(i<=index){
+                    $(val).attr('style','color:peru;');
+                    $(val).attr('class','glyphicon glyphicon-star')
+                }
+                else{
+                    $(val).attr('style','');
+                    $(val).attr('class','glyphicon glyphicon-star-empty')
+                }
+            });
+        });
+    }
+
+    function delmsg(){
+        var msg = '您真的确定要删除吗？\n\n请确认！';
+        if(confirm(msg) == true){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+
+
+
+    function otheropenfile(path){
+        var enpath = encodeURI(path);
+        var data = {
+            'path': enpath
+        };
+        $.get("{{url_for('auth.othersoft')}}", data, function(data){
+
+        });
+    }
+
+
+
+    function show_qkupload(){
+        $('#qload').toggleClass('qushow');
+    }
+    function change_upfile_file(){
+    var obj = document.getElementById('upload');
+    var length = obj.files.length;
+    $('#fe').html('')
+    for (var i=0; i< length; i++){
+      // console.log(obj.files[i].name)
+      var fname = obj.files[i].name;
+      $('#fe').append('<span class="flname">'+fname+'</span>')
+    }
+
+    
+    
+  }
+
+    
+
+</script>
+
+<div style="margin: 0 10px;">
+    <div id="waterfall" class="masonry" style="position: relative; height: 1569.03px; width: 1870px;">
+      <!-- <div id="waterfall"> -->
+        {%for m in movielist%}
+          <div class="item masonry-brick" style="position: absolute; top: 0px; left: 0px;">
+              <div class="movie-box" href="" target="_blank">
+                  <div id="{{m.id}}" class="photo-frame">
+                      <a href="{{ url_for('main.show',id=m.id) }}" target="_blank"><img src="{{m.img}}" title="{{m.title}}"></a>
+                      <div class="nop">
+                        <ul>
+                            <!-- <li><a href="#"><i></i>编辑</a></li> -->
+                            <li><a title="编辑" href="{{ url_for('auth.edit_video',id=m.id) }}"><i class="glyphicon glyphicon-pencil"></i>编辑</a></li>
+                            <li><a title="从系统中移除，硬盘中保留文件" href="{{ url_for('auth.delete_video',id=m.id,dmodel=0)}}" onclick="javascript:return delmsg()"><i class="glyphicon glyphicon-remove"></i>移除</a></li>
+                            <li><a title="彻底删除文件" href="{{ url_for('auth.delete_video',id=m.id,dmodel=1)}}" onclick="javascript:return delmsg()"><i class="glyphicon glyphicon-trash"></i>删除</a></li>
+                            <li><a class="nopc" href="javascript:;" ><i class="glyphicon glyphicon-repeat"></i>取消</a></li>
+                        </ul>
+                      </div>
+                      {% if m.task %}
+                      <div class="taskst">
+                          <p>任务等待中</p>
+                      </div>
+                      {%endif%}
+                  </div>
+                  <p>
+                        {%if m.ishd()%}
+                            <span class="hd">{{m.ishd()}}</span>
+                        {%endif%}
+                    {{m.title}}
+                  </p>
+                  {%if not m.isonline()%}
+                  <p class="videotag">文件离线</p>
+                  {%endif%}
+                  {%if m.chinese%}
+                  <p class="zm">中文字幕</p>
+                  {%endif%}
+                </div>
+              
+          </div>
+        {%endfor%}
+      <!-- </div> -->
+      <div class="pagefooter">
+        {% if pagination %}
+        {{ macros.pagination_widget(pagination,'auth.list_video', tag=tagid, actor=actorid, cate=cid, stats=stats, ares=ares, fh=fh,uuid=uuid)}}
+        {%endif%}
+      </div>
+    </div>
+    
+    </div>
+    
+    
+    
+    
+    <script language="JavaScript">
+      (function($) {
+          $('#waterfall').masonry({
+              itemSelector: ".item",
+              isAnimated: false,
+              isFitWidth: true
+          });
+      })(jQuery);
+    </script>
+{% endblock %}

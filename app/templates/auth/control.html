@@ -1,0 +1,89 @@
+{% extends "auth/newbase.html" %}
+{% import "auth/_macros.html" as macros %}
+{% block head_script %}
+{{ super() }}
+<link rel='stylesheet' type='text/css' href="{{url_for('static', filename='css/uf.css')}}">
+{% endblock %}
+
+
+
+{% block page_content %}
+
+<div class="box" style="margin: 0 20px;">
+    <ul class="nav nav-tabs">
+        <li role="presentation" class="active"><a href="#">硬盘</a></li>
+        <li role="presentation"><a href="{{url_for('auth.setting')}}">设置</a></li>
+        <li role="presentation"><a href="{{url_for('auth.list_task')}}">任务列表</a></li>
+    </ul>
+<h4 style="margin-top:20px; border-left: 8px solid #eee; padding:5px;">添加分区</h4>
+<div style="text-align: center; margin-bottom: 30px;">
+<form method="POST" class="form-inline">
+    <div class="form-group" style="margin-right: 15px;">
+      <label for="exampleInputName2">硬盘别名:</label>
+      <!-- <input type="text" class="form-control" id="exampleInputName2" placeholder="请输入硬盘别名"> -->
+      {{form.alisename(**{'class':'form-control','placeholder':'请输入硬盘别名'})}}
+    </div>
+    <div class="form-group" style="margin-right: 15px;">
+      <label for="exampleInputEmail2">存储路径:</label>
+      <!-- <input type="email" class="form-control" id="exampleInputEmail2" placeholder="请输入文件存储路径"> -->
+      {{form.part(**{'class':'form-control','placeholder':'请输入文件存储路径'})}}
+    </div>
+    <!-- <button type="submit" class="btn btn-default">提交</button> -->
+    {{form.submit(**{'class':'btn btn-primary'})}}
+    {{ form.hidden_tag() }}
+
+</form>
+</div>
+
+
+<div>
+    <h4 style="margin-top: 20px;
+    border-left: 8px solid #eee;
+    padding: 5px;">已挂载分区列表</h4>
+    <table class="table table-hover">
+        <tr>
+            <td>UUID</td>
+            <td>硬盘别名</td>
+            <td>总容量</td>
+            <td>存储路径</td>
+            <td>剩余容量</td>
+            <td>操作</td>
+        </tr>
+        {% for part in disks%}
+            <tr>
+                <td><a href="{{url_for('auth.list_video',uuid=part.uuid)}}">{{part.uuid}}</a></td>
+                <td>{{part.AliseName}}</td>
+                <td>{{part.DiskTotal}}</td>
+                <td>{{part.Path}}</td>
+                <!-- <td>{{part.FreeSize}}G</td> -->
+                <td>
+                    {%if part.FreeSize%}
+                    <div style="margin: 0;" class="progress">
+                        <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0"
+                            aria-valuemax="100" style="width:{{(1-part.FreeSize/part.DiskTotal)*100}}%;">
+                            {{part.FreeSize}}G
+                        </div>
+                      </div>
+                    {%else%}
+                        <span class="label label-danger">离线</span>
+                    {%endif%}
+                </td>
+                <td>
+
+                    <a href="{{url_for('auth.cgstatus', id=part.id)}}">
+                        {%if part.Status%}
+                        <span class="label label-success">已激活</span>
+                        {%else%}
+                        <span class="label label-default">未激活</span>
+                        {%endif%}
+                    </a>
+                    <a href="#">修改</a>
+                    <a href="{{url_for('auth.deldisk', id=part.id)}}">移除</a>
+                </td>
+            </tr>
+        {%endfor%}
+    </table>
+</div>
+
+</div>
+{% endblock %}

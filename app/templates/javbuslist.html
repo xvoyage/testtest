@@ -1,0 +1,23 @@
+{% extends "auth/newbase.html" %}
+{% import "auth/_macros.html" as macros %}
+{% block head_script %}
+{{ super() }}
+<link rel='stylesheet' type='text/css' href="{{url_for('static', filename='css/javbusmain.css')}}">
+<script src="{{url_for('static', filename='js/jquery.masonry.min.js')}}"></script>
+{% endblock %}
+
+
+
+{% block page_content %}
+{{javbusmg['main']|safe}}
+{{javbusmg['footer']|safe}}
+<script language="JavaScript">
+    (function($) {
+        $('#waterfall').masonry({
+            itemSelector: ".item",
+            isAnimated: false,
+            isFitWidth: true
+        });
+    })(jQuery);
+</script>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% macro pagination_widget(pagination, endpoint) %}
+<div class="pagelist">
+        <div class="l-btns">
+            <span>显示</span>
+            <input name="txtPageNum" type="text" value="10" class="pagenum">
+            <span>条/页</span>
+        </div>
+        <div id="PageContent" class="default">
+            <span>共{{ pagination.total }}记录</span>
+            {% if not pagination.has_prev %}
+            <span class="disabled prev">&laquo;</span>
+            {% else %}
+            <a href="{{ url_for(endpoint, page = pagination.page - 1, **kwargs) }}">&laquo;</a>
+            {% endif %}
+            {% for p in pagination.iter_pages() %}
+                {% if p %}
+                    {% if p == pagination.page %}
+                        <span class="current">{{ p }}</span>
+                    {% else %}
+                        <a class="" href="{{ url_for(endpoint, page = p, **kwargs) }}">
+                            {{ p }}
+                        </a>
+                    {% endif %}
+                {% else %}
+                    <span>&hellip;</span>
+                {% endif %}
+            {% endfor %}
+            {% if not pagination.has_next %}
+            <span class="disabled next">&raquo;</span>
+            {% else %}
+            <a class="next" href="{{ url_for(endpoint, page = pagination.page - 1, **kwargs)}}">
+                &raquo;
+            </a>
+            {% endif %}
+        </div>
+</div>
+{% endmacro %}

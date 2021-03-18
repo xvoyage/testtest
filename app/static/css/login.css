@@ -1,0 +1,108 @@
+html,body{
+    height: 100%;
+    margin:0px;
+    font-family: 'Microsoft Yahei','sans-serif';
+}
+p{
+    margin: 0;
+}
+
+.login{
+    position: relative;
+    background-color:#CCCCCC;
+    height: 100%;
+    overflow: hidden;
+    background: url('../img/th.jpg') no-repeat;
+    background-position: 50%;
+}
+
+.login-con{
+    position: absolute;
+    right: 160px;
+    width:300px;
+    height: 280px;
+    top:50%;
+    margin-top: -150px;
+    background-color:#fff;
+    border-radius: 5px;
+    
+}
+
+.login-header{
+    padding: 18px;
+    border-bottom: 1px solid #e8eaec;
+    font-size: 14px;
+}
+
+.login-main{
+    margin: 32px 15px 0px;
+}
+
+.input-group{
+    display: inline-block;
+    width: 100%;
+    margin-bottom: 22px;
+    font-size: 0px;
+    position: relative;
+}
+
+.input-group_before{
+    display: block;
+    position: absolute;
+    height: 30px;
+    width: 32px;
+    border: 1px solid #e8eaec;
+    border-right-width: 0px;
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+    background-color: #e8eaec;
+}
+
+.ico_user{
+    background: url('../img/people_fill.png') no-repeat;
+    background-position: 50%;
+}
+
+.ico_pwd{
+    background: url('../img/lock_fill.png') no-repeat;
+    background-position: 50%;
+}
+
+.h-input{
+    margin-left: 32px;
+}
+
+.h-input input{
+    width: 100%;
+    box-sizing: border-box;
+    height: 32px;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+    border: 1px solid #e8eaec;
+    padding: 5px 7px;
+    font-size: 14px;
+    cursor:text;
+}
+
+.btn{
+    background-color: #2b85e4;
+    height: 32px;
+    width:100%;
+    outline: 0px;
+    border-width: 0px;
+    color: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.7s;
+}
+
+.btn:hover{
+    color: #fff;
+    background-color: #57a3f3;
+}
+
+.btn:active{
+    color: #fff;
+    background-color: #2b85e4;
+}
+

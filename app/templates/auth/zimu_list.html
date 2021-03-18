@@ -1,0 +1,261 @@
+{% extends "auth/newbase.html" %}
+{% import "auth/_macros.html" as macros %}
+{% block head_script %}
+{{ super() }}
+<link rel='stylesheet' type='text/css' href="{{url_for('static', filename='css/javbusmain.css')}}">
+<link rel='stylesheet' type='text/css' href="{{url_for('static', filename='css/javdb.css')}}">
+<link rel='stylesheet' type='text/css' href="{{url_for('static', filename='css/nmain.css')}}">
+<script src="{{url_for('static', filename='js/jquery.masonry.min.js')}}"></script>
+
+
+{% endblock %}
+{%block sendio%}
+<script type="text/javascript">
+    var socket = io.connect('http://192.168.1.127:80/messagequeue');
+    socket.on('server_response', function(reg){
+        var arrmg = reg.data;
+        if(arrmg){
+            for(i=0; i<arrmg.length; i++){
+                var pid = arrmg[i][0];
+                // var jd = parseInt(parseFloat(arrmg[i][1]) * 100);
+                if(parseInt(pid)> 0){
+                    var jd = parseInt(parseFloat(arrmg[i][1]) * 100);
+                    var jdpre = jd + '%';
+                    // $('#'+pid).attr('aria-valuenow',jd);
+                    // $('#'+pid).attr('style','width:'+jdpre);
+                    // $('#'+pid).text(jdpre);
+                    var stas = arrmg[i][2];
+
+                    if (parseInt(stas) == 0){
+                        var mghtml = '<div class="jdmsg"><p>正在生成视频预览图...</p></dvi>';
+                        $('#'+pid).append(mghtml);
+                    }
+                    if (parseInt(stas) == 1){
+                        $('.jdmsg').append('<p>视频预览图生成完毕...</p>')
+                    }
+                    if (parseInt(stas) == 3){
+                        $('.jdmsg').append('<p>正在处理视频...</p>')
+                    }
+                    if (parseInt(stas) == 3){
+                        $('.jdmsg').append('<p>视频处理完毕...</p>');
+                    }
+
+
+
+                    var prid = 'p'+pid;
+                    var obp = document.getElementById(prid)
+                    if(obp == null){
+                        var html = '<div class="progress" style=" position: absolute; left: 0; bottom: 0px; margin: 0; width: 100%; height: 3px;"><div id ="';
+                        html += prid;
+                        html +='"class="progress-bar progress-bar-success progress-bar-striped" role="progressbar"  aria-valuemin="0" aria-valuemax="100" ></div>';
+                        $('#'+pid).append(html);
+                    }
+                    $('#'+prid).attr('aria-valuenow',jd);
+                    $('#'+prid).attr('style','width:'+jdpre);
+                    $('#'+prid).text(jdpre);
+                    // $('#'+pid);
+                    console.log(jd)
+                    if(jd >= 100 && parseInt(stas) == 3){
+                        // $('#'+pid).children('.jdt').remove()
+                        $('.progress').remove()
+                        $('.jdmsg').remove()
+                    }
+                }
+                else{
+                    spop({
+                        template: arrmg[i][1],
+                        autoclose: 5000
+                    });
+                }
+            }
+        }
+    });
+</script>
+		
+{%endblock%}
+
+
+{% block page_content %}
+<script type="text/javascript">
+    if(/Android|webOS|iPhone|iPod|BlackBerry/i.test(navigator.userAgent)) {
+        window.location.href = "{{url_for('main.mlist_video')}}";
+    } 
+</script>
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $('#otag').click(function(){
+            $('#bqul').toggleClass("opendiv")
+        })
+        $('#bqul2').click(function(){
+            $('#bqlist2').toggleClass("opendiv")
+        })
+    })
+
+
+    function submitFrom(path){
+        $('#form1').attr("action", path)
+        $('#form1').submit();
+    }
+
+    function change_stats(tag,id,index){
+        var data ={
+            'id': id,
+            'stats': index
+        }
+        $.get("{{url_for('auth.cgstats')}}", data, function(data){
+            var pre = $(tag).parent();
+            pre.find('i').each(function(i,val){
+                if(i<=index){
+                    $(val).attr('style','color:peru;');
+                    $(val).attr('class','glyphicon glyphicon-star')
+                }
+                else{
+                    $(val).attr('style','');
+                    $(val).attr('class','glyphicon glyphicon-star-empty')
+                }
+            });
+        });
+    }
+
+    function delmsg(){
+        var msg = '您真的确定要删除吗？\n\n请确认！';
+        if(confirm(msg) == true){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+
+    function showvideo(tag,id, url){
+        $('#'+id).toggleClass("closeimg");
+        if($(tag).hasClass('glyphicon-play-circle')){
+            $(tag).removeClass('glyphicon-play-circle');
+            $(tag).addClass('glyphicon-stop');
+            $('#v_'+id).children(":first").attr('src', url);
+            document.getElementById('v_'+id).load();
+        }
+        else{
+            $(tag).removeClass('glyphicon-stop');
+            $(tag).addClass('glyphicon-play-circle');
+            $('#v_'+id).children(":first").attr('src', '');
+        }
+        
+        
+    }
+
+    function addplay(id,tag){
+        var  data = {
+            'id': id
+        };
+
+        $.get("{{url_for('auth.add_play')}}", data, function(data){
+            $(tag).attr('class','glyphicon glyphicon-ok')
+        });
+    }
+
+    function delplay(id){
+        var data = {
+            'id': id
+        };
+        $.get("{{url_for('auth.del_play')}}", data, function(data){
+            var litag = $('#'+id).parents("li:eq(0)")
+            litag.remove()
+        });
+    }
+
+    function otheropenfile(path){
+        var enpath = encodeURI(path);
+        var data = {
+            'path': enpath
+        };
+        $.get("{{url_for('auth.othersoft')}}", data, function(data){
+
+        });
+    }
+
+    function get_message(){
+			$.get("{{url_for('auth.readmg')}}", function(data){
+				// alert(data.data instanceof Array);
+				var arrmg = data.data;
+				if(arrmg){
+                    var htmltext ="<ol>"
+					for(i=0; i<arrmg.length; i++){
+                        htmltext += "<li>"+arrmg[i]+"正在转换中</li>"
+				    }
+                    if(arrmg.length <=0){
+                        htmltext +='<li>当前没有任务执行</li>'
+                    }
+                    htmltext += "</ol>"
+                    spop({
+                            template: htmltext,
+                            autoclose: 5000
+                        });
+			    }
+		    })
+	}
+
+    function show_qkupload(){
+        $('#qload').toggleClass('qushow');
+    }
+    function change_upfile_file(){
+    var obj = document.getElementById('upload');
+    var length = obj.files.length;
+    $('#fe').html('')
+    for (var i=0; i< length; i++){
+      // console.log(obj.files[i].name)
+      var fname = obj.files[i].name;
+      $('#fe').append('<span class="flname">'+fname+'</span>')
+    }
+    
+  }
+
+</script>
+
+<div style="margin: 0 10px;">
+    <div id="waterfall" class="masonry" style="position: relative; height: 1569.03px; width: 1870px;">
+      <!-- <div id="waterfall"> -->
+        {%for m in movielist%}
+          <div class="item masonry-brick" style="position: absolute; top: 0px; left: 0px;">
+              <div class="movie-box" href="" target="_blank">
+                  <div id="{{m.id}}" class="photo-frame">
+                      <a href="{{ url_for('main.zmshow',id=m.id) }}" target="_blank"><img src="{{m.img}}" title="{{m.title}}"></a>
+                      <div class="opvideo">
+                        <i class="glyphicon glyphicon-export"></i>
+                        <a href="#" title="编辑"><i class="glyphicon glyphicon-pencil"></i></a>
+                        <a href="{{url_for('auth.zimu_del',id=m.id)}}" onclick="javascript:return delmsg()" title="删除"><i class="glyphicon glyphicon-trash"></i></a>
+                      </div>
+                  </div>
+                  <p>
+
+                    {{m.title}}
+                  </p>
+                </div>
+              
+          </div>
+        {%endfor%}
+      <!-- </div> -->
+      <div class="pagefooter">
+        {% if pagination %}
+        {{ macros.pagination_widget(pagination,'auth.list_video', tag=tagid, actor=actorid, cate=cid, stats=stats, ares=ares, fh=fh,uuid=uuid)}}
+        {%endif%}
+      </div>
+    </div>
+    
+    </div>
+    
+    
+    
+    
+    <script language="JavaScript">
+      (function($) {
+          $('#waterfall').masonry({
+              itemSelector: ".item",
+              isAnimated: false,
+              isFitWidth: true
+          });
+      })(jQuery);
+    </script>
+{% endblock %}

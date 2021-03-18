@@ -1,0 +1,101 @@
+{% extends "auth/base.html" %}
+{% import "auth/_macros.html" as macros %}
+{% block head_script %}
+{{ super() }}
+<link rel='stylesheet' type='text/css' href="{{url_for('static', filename='css/uf.css')}}">
+<link rel='stylesheet' type='text/css' href="{{url_for('static', filename='css/myimg.css')}}">
+{% endblock %}
+
+
+{% block page_content %}
+
+<script type="text/javascript">
+    var comm_select_all = '全选';
+    var comm_cancel_all = '取消';
+
+    function checkAll(chkobj) {
+        if ($(chkobj).text().trim() == comm_select_all.trim()) {
+            $(chkobj).children("span").text(comm_cancel_all);
+            $(".checkall input:enabled").prop("checked", true);
+        } else {
+            $(chkobj).children("span").text(comm_select_all);
+            $(".checkall input:enabled").prop("checked", false);
+        }
+    }
+
+    function submitFrom(path){
+        $('#form1').attr("action", path)
+        $('#form1').submit();
+    }
+
+</script>
+
+<div class="content">
+        <div class="">
+            <ol class="breadcrumb">
+                <li><a href="#">首页</a></li>
+                <li><a href="{{url_for('auth.list_video')}}">视频列表</a></li>
+                <li class="active">新增</li>
+            </ol>
+        </div>
+        <div class="">
+                <nav class="nav">
+                    <div class="collapse navbar-collapse">
+                        <ul class="nav navbar-nav">
+                            <a href="{{url_for('img.add_photo')}}" class="opa btn"><i class="glyphicon glyphicon-plus"></i>新增</a>
+                            <a href="javascript:;" class="opa btn" onclick="checkAll(this)"><i class="glyphicon glyphicon-check"></i><span>全选</span></a>
+                            <a href="javascript:;"  class="opa btn" onclick="submitFrom('/photo_del')"><i class="glyphicon glyphicon-trash"></i>删除</a>
+                        </ul>
+                        <ul class="nav navbar-nav navbar-right">
+                            <form class="form-inline">
+                                <div class="form-group  inputSearch">
+                                    <input type="text" class="form-control input-sm" placeholder="Search">
+                                    <a href="#" class="icosearch"><i class="glyphicon glyphicon-search"></i></a>
+                                </div>
+                            </form>
+                        </ul>
+                    </div>
+                </nav>
+        </div>
+    <div class="row imgslist">
+        <form id="form1" method="POST" action="">
+        {% for m in photolist%}
+        <div class="col-xs-6 col-sm-4 col-lg-2 col-md-3">
+            <div class="listimg">
+                <a href="{{url_for('main.show_img',id=m.id)}}" target="_blank" title="{{m.name}}"><img src="{{ m.Imgs[0] }}" alt="{{m.name}}"></a>
+                <div class="mg">
+                    <div class="details-foot">
+                        <p class="checkall">
+                            <input name="checked_arry" class="icheckinput" type="checkbox" value=""/>
+                            {% for s in range(5) %}
+                                {% if s <= m.stats %}
+                                    <i class="glyphicon glyphicon-star" style="color:peru;"></i>
+                                {% else %}
+                                    <i class="glyphicon glyphicon-star-empty"></i>
+                                {% endif %}
+                            {% endfor %}
+                        </p>
+                        <div class="footer-img">
+                            <a href="{{url_for('img.edit_photo', id=m.id)}}"><i class="glyphicon glyphicon-pencil"></i></a>
+                            <a href="{{url_for('img.del_photo', id=m.id)}}"><i class="glyphicon glyphicon-trash"></i></a>
+
+                        </div>
+                    </div>
+                    <div class="remarks">
+                        <p title="{{m.name}}">{{ m.name }}</p>
+                    </div>
+                    <div class="tool">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        
+        </form>
+    </div>
+    <div class="row">
+        {{ macros.pagination_widget(pagination,'img.list_photo', tag=tagid, actor=actorid, cate=cid)}}
+    </div>
+</div>
+{% endblock %}

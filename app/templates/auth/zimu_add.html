@@ -1,0 +1,379 @@
+{%extends "auth/nbase.html"%}
+{% import "auth/_macros.html" as macros %}
+{%block title%}
+添加视频
+{%endblock%}
+{%block sendio%}
+{%endblock%}
+{%block head_css%}
+{{super()}}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="{{url_for('static', filename='css/actor.css')}}">
+<link rel="stylesheet" href="../../static/css/plugins/sweetalert/sweetalert.css">
+<link type="text/css" rel="stylesheet" href="../../static/css/mad.css">
+<link rel="stylesheet" href="//static.jstree.com/latest/assets/dist/themes/default/style.min.css" />
+<!-- <link href="../static/css/plugins/jsTree/style.min.css" rel="stylesheet"> -->
+{%endblock%}
+{% block head_script %}
+{{super()}}
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+<script src="../../static/js/plugins/sweetalert/sweetalert.min.js"></script>
+{%endblock%}
+{%block page_content%}
+<form method="POST">
+<div class="gray-bg">
+    <div class="wrapper wrapper-content">
+        <div class="row">
+            <div class="col-sm-2">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-content">
+                        <div class="file-manager">
+                            <!-- <a href="{{url_for('auth.add_arctor')}}" class="btn btn-primary btn-block">保存</a> -->
+                            {{form.submit(**{'class':'btn btn-primary btn-block'})}}
+                            <div class="hr-line-dashed"></div>
+                            <h5>操作</h5>
+                            <ul class="folder-list" style="padding: 0">
+                                <!-- <li><a href="{{url_for('auth.list_actor')}}"><i class="fa fa-check-square-o"></i><span>首页</span></a> -->
+                                <li><a href="javascript:;" onclick="checkAll(this)"><i class="fa fa-check-square-o"></i><span>返回</span></a>
+                                
+                                </li>
+                                <li><a href="javascript:;" id="getmg"><i class="fa fa-trash-o"></i> <span>抓取</span></a>
+                                </li>
+                                <li><a href="#"><i class="fa fa-heart"></i><span>喜欢</span></a>
+                                </li>
+                            </ul>
+                            <h5 class="tag-title">查询</h5>
+                            <form method="POST" action="/alist" class="pull-right mail-search">
+                                <div class="input-group">
+                                    <!-- <input type="text" class="form-control input-sm" name="search" placeholder="Search..."> -->
+                                    <select name="act"  class="form-control input-sm select2" style="width: 200px;"> 
+                                        <option value="-1">Search</option>
+                                        {%for i in actors%}
+                                        <option value="{{i[0]}}">{{i[1]}}</option>
+                                        {%endfor%}
+                                    </select>
+                                    <div class="input-group-btn">
+                                        <button type="submit" class="btn btn-sm btn-primary">
+                                            搜索
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                            <div class="clearfix"></div>
+                            <h5 class="tag-title">导航</h5>
+                            <ul class="folder-list" style="padding: 0">
+                                <li><a href="{{url_for('auth.list_video')}}"><i class="fa fa-tv"></i><span>视频</span></a></li>
+                                <li><a href="{{url_for('img.list_photo')}}"><i class="fa fa-picture-o"></i><span>图片</span></a></li>
+                                <li><a href="{{url_for('auth.diskshow')}}"><i class="fa fa-tachometer"></i><span>控制面板</span></a></li>
+                            </ul>
+                            <h5 class="tag-title">资讯</h5>
+                            <ul class="folder-list" style="padding: 0">
+                                <li><a href="{{url_for('main.javbuslist')}}"><i class="fa fa-comments"></i><span>JavBus</span></a></li>
+                                <li><a href="{{url_for('main.javdb')}}"><i class="fa fa-comments"></i><span>JavDb</span></a></li>
+
+                            </ul>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-9">
+              <div  class=" addmain row animated fadeInRight">
+                  
+                <div class="col-sm-4">
+                  <div>
+                    <div  class="imgshow">
+                        
+                            <img id="uimg" class="img-responsive" src="{% if form.imgurl.data %}{{form.imgurl.data}}{%else%}/static/upload/image/zd.jpg{% endif %}">
+                        
+                        
+                        <!-- <img id="uimg" alt="image" class="img-responsive"> -->
+                        <div class="imgop">
+                          <p style="position: relative; overflow: hidden;">上传
+                            <input type="file" id="upload">
+
+                          </p>
+                          
+                        </div>
+                    </div>
+                    <div style="margin-top: 50px;" class="">
+                        
+                        <div class="form-group">
+                          <h4>番号:</h4>
+                          <div>
+                          {{form.name(**{'class':'form-control ninput','placeholder':'请输入番号...'})}}
+                        </div>
+                        </div>
+                        <div class="form-group">
+                              <h4>标题:</h4>
+                              {{form.title(**{'class':'form-control ninput','placeholder':'请输入标题...'})}}
+                        </div>
+           
+ 
+
+
+                    </div>
+                </div>
+                </div>
+                <div class="col-sm-offset-1 col-sm-6">
+
+
+
+
+
+
+
+
+
+ 
+
+
+                  
+                  
+                  <div id='di' class="form-group">
+                    <h4>视频:</h4>
+                    <!-- <input id='suf' type="text" class="form-control ninput" placeholder="请输入番号..."> -->
+                    {{form.movieurl(**{'class':'form-control ninput','placeholder':'请选择文件...','readonly':'true'})}}
+                  </div>
+                </div>
+                {{ form.hidden_tag() }}
+                {{form.imgurl(**{'type':'hidden'})}}
+                {{ckeditor.load()}}
+            
+                
+            </div>
+            
+            </div>
+        </div>
+        
+    </div>
+
+</div>
+<div id='oversecn' class="oversecn">
+  <div class="fileup">
+    <div class="ibox float-e-margins ">
+      <div class="ibox-title">
+          <h5>文件上传</h5>
+          <div class="ibox-tools">
+              <a class="collapse-link">
+                  <i class="fa fa-chevron-up"></i>
+              </a>
+              <a class="dropdown-toggle" data-toggle="dropdown" href="form_advanced.html#">
+                  <i class="fa fa-wrench"></i>
+              </a>
+              <ul class="dropdown-menu dropdown-user">
+                  <li><a href="form_advanced.html#">选项1</a>
+                  </li>
+                  <li><a href="form_advanced.html#">选项2</a>
+                  </li>
+              </ul>
+              <a onclick="closefile()" class="close-link">
+                  <i class="fa fa-times"></i>
+              </a>
+          </div>
+      </div>
+      <div class="ibox-content">
+        <div id="using_json">
+          <div style="width: 800px; margin: 0 auto; background:white; border-radius:0px; padding:0px;">
+            <div class="header">
+              <div >
+                <i id='back' onclick="get_catelog(this)" class="fa fa-arrow-left"></i>
+              </div>
+              
+              <div class="dizhi">
+                <a href="javascript:;">此电脑<i class="fa fa-chevron-right"></i></a>
+              </div>
+            </div>
+          <div id="container" role="main">
+            
+            <div id="tree" style="height: 800px;"></div>
+            <div id="data">
+              <div id='content' class="content " style="text-align:center; height: 800px;">
+              </div>
+            </div>
+          </div>
+          <div class="mgfooter">
+            <div>
+              <label>文件名：</label>
+              <span id='fname'></span>
+            </div>
+            <div class="tright">
+              <input onclick="closefile()" class="btn btn-default" type="button" value="保存">
+            </div>
+          </div>
+          </div>
+        </div>
+      </div>
+  </div>
+
+</div>
+</div>
+</form>
+<script src="../static/js/plugins/prettyfile/bootstrap-prettyfile.js"></script>
+<script type="text/javascript">
+  $('.select2').select2(
+      {
+          placeholder : '请选择'
+      }
+  );
+  $('.select1').select2(
+      {
+          maximumSelectionLength:1
+      }
+  );
+  $('#movieurl').click(function(){
+    $('#oversecn').toggleClass('oversecn_open')
+  })
+  function closefile(){
+    $('#oversecn').toggleClass('oversecn_open')
+    $('#movieurl').val($('#fname').text())
+  }
+
+  $('#upload').change(function(){
+    var crowd_file = $('#upload')[0].files[0];
+            if (crowd_file == null || crowd_file =='' || 
+                crowd_file == 'undefined'){
+                alert("请选择文件");
+                return false;
+            }
+            delimg()
+                                    
+            var formData = new FormData();
+            formData.append("upload", crowd_file);
+            $('#uimg').html('<img src="../../static/img/loading.gif">')
+            $.ajax({
+                url : '/iupload',
+                dataType : 'json',
+                type : 'POST',
+                data : formData,
+                processData : false,
+                contentType : false,
+                success : function(data){
+                    $('#uimg').attr('src',data.uploadfile)
+                    $('#imgurl').val(data.uploadfile)
+                    // var file = $('#upload');
+                    // file.after(file.clone().val(''));
+                    // file.remove();
+                },
+                error : function(response){
+                    alert('ss');
+                }
+            });
+  })
+        function delimg(){
+            var crowd_url = $('#imgurl').val();
+            var formData = new FormData();
+            formData.append('imgorfile', crowd_url);
+            $.ajax({
+                url : '/idelete',
+                dataType : 'json',
+                type : 'POST',
+                data : formData,
+                processData : false,
+                contentType : false,
+                success : function(data){
+                            $('#uimg').attr('src','/static/upload/image/zd.jpg')
+                            // $('#fe').children().first().remove()
+                            $('#imgurl').val('');
+                },
+                error : function(response){
+                        }
+            })
+        };
+
+        $('#getmg').click(function(){
+            var keyword = $('#name').val().toUpperCase();
+            if (keyword == null || keyword =='' || 
+                keyword == 'undefined'){
+                alert("请选择文件");
+                return false;
+            }
+            var data = {
+                'keyword': keyword
+            };
+            $.get("{{url_for('auth.getvideomg')}}", data, function(data,status){
+                if(status == 'success'){
+                    $('#title').val(data.title);
+                    $('#uimg').attr('src',data.img);
+                    $('#imgurl').val(data.img)
+                    if (data.tags != ''){
+                        // $('#tm').attr('class','catemove chanageinput');
+                        $('#tid_text').val(data.tags);
+                    }
+                    if (data.actors != ''){
+                        // $('#am').attr('class','catemove chanageinput');
+                        $('#aid_text').val(data.actors);
+                    }
+                    if (data.cate != ''){
+                        // $('#catem').attr('class','catemove chanageinput');
+                        $('#cid_text').val(data.cate);
+                    }
+                    if(data.date !=''){
+                      $('#date').val(data.date);
+                    }
+                    if(data.producer !=''){
+                      $('#producer_text').val(data.producer);
+                    }
+                    if(data.director !=''){
+                      $('#director_text').val(data.director);
+                    }
+                    if(data.director !=''){
+                      $('#series_text').val(data.series);
+                    }
+                }
+                else{
+                    alert('ssss')
+                    var mgs = data.mg;
+                }
+            });
+
+        })
+
+  $('#name').blur(function(){
+            ntag = $(this)
+            var fanhao = ntag.val();
+            var reg = /^[a-zA-Z]+-[0-9]+(-[a-a-zA-Z]){0,1}$/;
+            var re = reg.test(fanhao);
+            if(!re){
+                ntag.parent().attr('class',' has-error has-feedback');
+                ntag.next().remove()
+                ntag.parent().append('<span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>');
+                return false;
+            }
+            var formData = new FormData();
+            var crowd_name = fanhao.toLowerCase();
+            formData.append('fh', crowd_name);
+            
+            $.ajax({
+					url : '/check',
+            		dataType : 'json',
+            		type : 'POST',
+            		data : formData,
+             		processData : false,
+            		contentType : false,
+					success : function(data){
+                        if(data.id == '-1'){
+                            ntag.parent().attr('class','has-success has-feedback');
+                            ntag.next().remove();
+                            ntag.parent().append('<span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true"></span>');
+                        }
+                        else{
+                            ntag.parent().attr('class','has-error has-feedback');
+                            ntag.next().remove();
+                            ntag.parent().append('<span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>');
+                        }
+					},
+					error : function(data){
+						alert('sss')
+					}
+				});
+
+        })
+
+</script>
+{%endblock%}
+{% block footer_script %}
+<script src="//static.jstree.com/latest/assets/dist/jstree.min.js"></script>
+<script src="../static/js/select_file.js"></script>
+{%endblock%}
+

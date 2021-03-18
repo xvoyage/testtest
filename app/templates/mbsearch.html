@@ -1,0 +1,116 @@
+{% import "auth/_macros.html" as macros %}
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  
+  <link rel="stylesheet" href="{{url_for('static', filename='css/bannerList.css')}}">
+  <link rel="stylesheet" href="{{url_for('static', filename='css/mbmain.css')}}">
+
+    
+</head>
+<body>
+<div class="mbheader">
+  <div class="touxian">
+    <img src="../static/img/tx.jpg">
+  </div>
+  <div class="hdsearch">
+    <input class="form-control" type="text" placeholder="search">
+  </div>
+  <div class="caidan">
+    <i class="glyphicon glyphicon-menu-hamburger" onclick="showorclose()" style="cursor: pointer;"></i>
+  </div>
+  <div class="v_area">
+    <a href="{{ url_for('main.mbindex')}}">精选</a>
+    <a href="{{ url_for('main.mlist_video',ares=0)}}">日本</a>
+    <a href="{{ url_for('main.mlist_video',ares=2)}}">欧美</a>
+    <a href="{{ url_for('main.mlist_video',ares=1)}}">国产</a>
+    <a href="{{ url_for('main.mlist_video',tag=40)}}">动漫</a>
+  </div>
+  <div class="fenglei">
+      <div class="fleft">
+        <ul class="bj">
+          <li><i class="glyphicon glyphicon-remove" onclick="showorclose()"></i></li>
+          <li id="fl">分类
+            <ul class="sul">
+              {%for ct in cateids%}
+              <li><a href="{{ url_for('main.mlist_video',cate=ct.id)}}">{{ct.name}}</a></li>
+              {%endfor%}
+            </ul>
+          </li>
+          <li id="bq">标签
+            <ul class="sul clossp">
+              {%for tg in tags%}
+              <li><a href="{{ url_for('main.mlist_video',tag=tg.id)}}">{{tg.name}}</a></li>
+              {%endfor%}
+            </ul>
+          </li>
+        </ul>
+      </div>
+  </div>
+</div>
+
+<div id='mpanel'>
+  <!-- <div class="nheader ">
+    <p>
+      <label>人妻</label>
+      <a href="#">more..</a>
+    </p>
+  </div> -->
+
+  <div class="imglist">
+    <ul>
+      {%for vd in movielist%}
+      <li>
+        <a href="{{url_for('main.mbshow',id=vd.id)}}" target="_blank"><img src="{{vd.img}}"></a>
+        <p>{{vd.title}}</p>
+        <p>{{vd.name}}</p>
+      </li>
+      {%endfor%}
+      <i class="justify-fix"></i>
+      <i class="justify-fix"></i>
+    </ul>
+  </div>
+  {% if pagination %}
+    {{ macros.pagination_widget(pagination,'main.mlist_video', tag=tagid, actor=actorid, cate=cid, stats=stats, ares=ares, fh=fh)}}
+    {%endif%}
+
+</div>
+
+<script src="../static/js/bannerList.js"></script>
+<script type="text/javascript">
+  bannerListFn(
+    $(".banner"),
+    $(".img-btn-list"),
+    $(".left-btn"),
+    $(".right-btn"),
+    2000,
+    true
+);
+
+  $('.bj').click(function(event){
+    event = event ? event : window.event;
+    var obj = event.srcElement ? event.srcElement : event.target;
+    $('.bj ul').each(function(index,element){
+      $(element).hide();
+    });
+    $(obj).children(":first").show();
+    // alert($(obj).attr('id'))
+  });
+
+  function showorclose(){
+    $('.fenglei').toggleClass('showsp');
+    $('#mpanel').toggleClass('clossp')
+  }
+
+
+    $(document).ready(function(){
+
+      $('.pagination').addClass('pagination-lg');
+    });
+
+</script>
+</body>
+</html>

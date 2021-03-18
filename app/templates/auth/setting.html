@@ -1,0 +1,75 @@
+{% extends "auth/newbase.html" %}
+{% import "auth/_macros.html" as macros %}
+{% block head_script %}
+{{ super() }}
+<link rel='stylesheet' type='text/css' href="{{url_for('static', filename='css/uf.css')}}">
+{% endblock %}
+
+
+
+{% block page_content %}
+
+
+  <div class="box" style="margin: 0 20px;">
+    <ul class="nav nav-tabs">
+        <li role="presentation" ><a href="{{url_for('auth.diskshow')}}">硬盘</a></li>
+        <li role="presentation" class="active"><a href="#">设置</a></li>
+        <li role="presentation"><a href="{{url_for('auth.list_task')}}">任务列表</a></li>
+    </ul>
+    <div  style="margin-top: 20px;">
+        <form class="form-horizontal" method="POST">
+
+            <div class="form-group">
+              <label for="inputPassword3" class="col-sm-2 control-label">移动文件</label>
+              <div class="col-sm-3">
+                <div class="checkbox">
+                    <label>
+                        {{form.cpOrmv()}} 开启：程序会以剪切形式移动到默认存放位置。
+                    </label>
+                  </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="inputPassword3" class="col-sm-2 control-label">离线文件</label>
+              <div class="col-sm-3">
+                <div class="checkbox">
+                    <label>
+                        {{form.show()}} 开启：屏蔽离线文件
+                    </label>
+                  </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="inputPassword3" class="col-sm-2 control-label">视频预览图</label>
+              <div class="col-sm-3">
+                <div class="checkbox">
+                    <label>
+                        {{form.preview()}} 开启：生成进度条预览图，生成时间较长，高占用CPU资源
+                    </label>
+                  </div>
+              </div>
+            </div>
+            <div class="form-group">
+            <label for="inputPassword3" class="col-sm-2 control-label">分割文件</label>
+              <div class="col-sm-3">
+                <div class="checkbox">
+                    <label>
+                        {{form.splitfile()}}  开启：程序会将文件分割为多个小文件，避免尴尬。
+                    </label>
+                  </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-offset-2 col-sm-3">
+                <!-- <button type="submit" class="btn btn-default">保存</button> -->
+                {{form.submit(**{'class':'btn btn-default'})}}
+              </div>
+            </div>
+            {{ form.hidden_tag() }}
+          </form>
+
+    </div>
+  </div>
+
+
+{% endblock %}

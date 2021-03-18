@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title></title>
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+		<link rel="stylesheet" href="{{url_for('static', filename='css/myvideo.css')}}">
+		<link rel="stylesheet" href="{{url_for('static', filename='css/uf.css')}}">
+		<link href="//cdn.bootcss.com/video.js/7.0.0-alpha.1/alt/video-js-cdn.css" rel="stylesheet">
+		<link href="../static/css/videojs.thumbnails.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/spop.css')}}">
+    <link rel="stylesheet" href="//static.jstree.com/latest/assets/dist/themes/default/style.min.css" />
+    <link type="text/css" rel="stylesheet" href="../static/css/mad.css">
+<script src="{{url_for('static', filename='js/spop.js')}}"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/socket.io/1.5.1/socket.io.min.js"></script>
+		<script type="text/javascript">
+			var socket = io.connect('http://192.168.1.127:80/messagequeue');
+			socket.on('server_response', function(reg){
+				var arrmg = reg.data;
+				console.log(arrmg)
+				if(arrmg){
+					for(i=0; i<arrmg.length; i++){
+						var pid = arrmg[i][0];
+						// var jd = parseInt(parseFloat(arrmg[i][1]) * 100);
+						if(parseInt(pid)> 0){
+							var jd = parseInt(parseFloat(arrmg[i][1]) * 100);
+							var jdpre = jd + '%';
+							// $('#'+pid).attr('aria-valuenow',jd);
+							// $('#'+pid).attr('style','width:'+jdpre);
+							// $('#'+pid).text(jdpre);
+							
+							var prid = 'p'+pid;
+							var obp = document.getElementById(prid)
+							if(obp == null){
+								var html = '<div class="progress" style=" margin: 0; width: 100%; height: 50px;"><div id ="';
+								html += prid;
+								html +='"class="progress-bar progress-bar-success progress-bar-striped" role="progressbar"  aria-valuemin="0" aria-valuemax="100" ></div>';
+								$('#'+pid).attr('class','row imgprocess')
+								$('#'+pid).append(html);
+							}
+							$('#'+prid).attr('aria-valuenow',jd);
+							$('#'+prid).attr('style','width:'+jdpre);
+							$('#'+prid).text(jdpre);
+							// $('#'+pid);
+							console.log(jd)
+							if(jd >= 100){
+								// $('#'+pid).children('.jdt').remove()
+								$('.progress').remove()
+								$('#'+pid).attr('class','row')
+							}
+						}
+						else{
+							spop({
+								template: arrmg[i][1],
+								autoclose: 5000
+							});
+						}
+					}
+				}
+			});
+		</script>
+		
+	</head>
+	<body>
+		<nav class="navbar navbar-default">
+			<div class="container-fluid">
+				<div class="navbar-header">
+					<a class="navbar-brand" href="#">Video</a>
+				</div>
+				<div class="collapse navbar-collapse">
+					<ul class="nav navbar-nav">
+						<li class="active">
+							<a href="#">内容</a>
+						</li>
+						<li>
+							<a href="#">控制面板</a>
+						</li>
+					</ul>
+					<ul class="nav navbar-nav navbar-right">
+
+							<li class="dropdown">
+								<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+										administrator <span class="caret"></span>
+								</a>
+								<ul class="dropdown-menu">
+									<li><a href="#">修改密码</a></li>
+									<li><a href="{{url_for('auth.logout')}}">注销登录</a></li>
+								</ul>
+							</li>
+						</ul>
+				</div>
+			</div>
+		</nav>
+		<div class="container">
+      <div class="row">
+        <div class="col-md-12" style="text-align: center;">
+          <!-- <img src="http://192.168.1.127/static/upload/image/2021/1/11/1610347475919.jpg">  -->
+          <p>02:01:01</p>
+          <div>
+            <input id='movieurl' type="text" class="form-control ninput">
+            <a href="#" style="margin-top: 5px;" class="btn btn-default">提交文件</a>
+          </div>
+          <div>
+            <span>上一张</span>
+            <span>下一下</span>
+          </div>
+          <div>
+            <label>开始时间：</label><span id='stime'>02:01:01</span>
+          </div>
+          <div>
+            <label>结束时间：</label><span id='etime'>02:01:03</span>
+          </div>
+          <label>内容：</label>
+          <div>
+            <textarea style="width: 600px; height: 100px;"></textarea>
+          </div>
+          <div style="margin-top: 10px;">
+            <a href="#" class="btn btn-default">获取时间</a>
+            <a href="#" class="btn btn-default">添加字幕</a>
+        </div>
+      </div>
+    </div>
+    <div id='oversecn' class="oversecn">
+      <div class="fileup">
+        <div class="ibox float-e-margins ">
+          <div class="ibox-title">
+              <h5>文件上传</h5>
+              <div class="ibox-tools">
+                  <a class="collapse-link">
+                      <i class="fa fa-chevron-up"></i>
+                  </a>
+                  <a class="dropdown-toggle" data-toggle="dropdown" href="form_advanced.html#">
+                      <i class="fa fa-wrench"></i>
+                  </a>
+                  <ul class="dropdown-menu dropdown-user">
+                      <li><a href="form_advanced.html#">选项1</a>
+                      </li>
+                      <li><a href="form_advanced.html#">选项2</a>
+                      </li>
+                  </ul>
+                  <a onclick="closefile()" class="close-link">
+                      <i class="fa fa-times"></i>
+                  </a>
+              </div>
+          </div>
+          <div class="ibox-content">
+            <div id="using_json">
+              <div style="width: 800px; margin: 0 auto; background:white; border-radius:0px; padding:0px;">
+                <div class="header">
+                  <div >
+                    <i id='back' onclick="get_catelog(this)" class="fa fa-arrow-left"></i>
+                  </div>
+                  
+                  <div class="dizhi">
+                    <a href="javascript:;">此电脑<i class="fa fa-chevron-right"></i></a>
+                  </div>
+                </div>
+              <div id="container" role="main">
+                
+                <div id="tree" style="height: 800px;"></div>
+                <div id="data">
+                  <div id='content' class="content " style="text-align:center; height: 800px;">
+                  </div>
+                </div>
+              </div>
+              <div class="mgfooter">
+                <div>
+                  <label>文件名：</label>
+                  <span id='fname'></span>
+                </div>
+                <div class="tright">
+                  <input onclick="closefile()" class="btn btn-default" type="button" value="保存">
+                </div>
+              </div>
+              </div>
+            </div>
+          </div>
+      </div>
+    
+    </div>
+    </div>
+    <script src="//static.jstree.com/latest/assets/dist/jstree.min.js"></script>
+    <script src="../static/js/select_file.js"></script>
+    <script type="text/javascript">
+      $('#movieurl').click(function(){
+        $('#oversecn').toggleClass('oversecn_open')
+      })
+      function closefile(){
+        $('#oversecn').toggleClass('oversecn_open')
+        $('#movieurl').val($('#fname').text())
+      }
+    </script>
+	</body>
+</html>

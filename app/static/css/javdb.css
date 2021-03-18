@@ -1,0 +1,14 @@
+.jhead{
+    margin-left: 20px;
+}
+.jhead a{
+    padding: 5px;
+    background-color: white;
+}
+.mgspan{
+    padding: 5px;
+    color: white;
+    background-color: #eea236;
+    border-radius: 4px;
+    font-size: 10px;
+}

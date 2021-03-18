@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+    <head>
+            
+            <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+            <link href="//cdn.bootcss.com/video.js/7.0.0-alpha.1/alt/video-js-cdn.css" rel="stylesheet">
+            <script src="//cdn.bootcss.com/video.js/7.0.0-alpha.1/video.min.js"></script>
+            <link rel="stylesheet" type="text/css" href="../../static/js/webuploader/webuploader.css">
+            <script type="text/javascript" src="../../static/js/webuploader/webuploader.html5only.js"></script>
+            <link type="text/css" rel="stylesheet" href="../../static/css/uf.css">
+            <script type="text/javascript">
+
+        
+            </script>
+    </head>
+    <body>
+
+        <div class="ufilemain">
+            <div class="leftinput" id="um">
+                <!-- <div class="flname">Doctor Rei28.jpg</div> -->
+                <div class="inputdel">
+                    <a id="demoive" href="javascript:;"><img src="../../static/img/icon_del.png" alt=""></a>
+                </div>
+                <div class="iload">
+                    <a id="upmoive" href="javascript:;"><img src="../../static/img/uload2.png" alt=""></a>
+                </div>
+            </div>
+            <div class="mpbutton" id="picker">
+                上传文件
+            </div>
+        </div>
+        <div class="imgwdiv">
+            <div class="imgndiv">
+            <div class="img-wai">
+                <div id="uvide">
+                  <!-- <video src="../../static/upload/video/JUL102.mp4" controls="controls"></video> -->
+                  <div id="progress" class="progress" style="width:100%;">
+                    <div class="progress-bar progress-bar-striped active" role="progressbar" style="width:0%;"></div>
+                </div>
+                </div>
+
+            </div>
+            </div>
+        </div>
+
+
+
+
+
+        <script type="text/javascript">
+            $(document).ready(function() {
+                var task_id = WebUploader.Base.guid(); // 产生文件唯一标识符task_id
+                var uploader = WebUploader.create({
+                    swf: '../../static/webuploader/Uploader.swf',
+                    server: '{{ url_for("auth.upload_part") }}', // 上传分片地址
+                    pick: '#picker',
+                    // auto: true,
+                    chunked: true,
+                    chunkSize: 20 * 1024 * 1024,
+                    chunkRetry: 3,
+                    threads: 1,
+                    duplicate: true,
+                    formData: { // 上传分片的http请求中一同携带的数据
+                        task_id: task_id,
+                    },
+                });
+                uploader.on('fileQueued', function(file){
+
+                    itag = $('#um').children().first()
+                    if(itag.attr('class') == 'flname'){
+                        itag.remove()
+                    }
+                    $('#um').prepend('<div class="flname">' + file.name + '</div>');
+
+                });
+                uploader.on('startUpload', function() { // 开始上传时，调用该方法
+                    $('#progress').show();
+                    $('.progress-bar').css('width', '0%');
+                    $('.progress-bar').text('0%');
+                    $('.progress-bar').removeClass('progress-bar-danger progress-bar-success');
+                    $('.progress-bar').addClass('active progress-bar-striped');
+                });
+        
+                uploader.on('uploadProgress', function(file, percentage) { // 一个分片上传成功后，调用该方法
+                    $('.progress-bar').css('width', percentage * 100 - 1 + '%');
+                    $('.progress-bar').text(Math.floor(percentage * 100 - 1) + '%');
+                });
+        
+                uploader.on('uploadSuccess', function(file) { // 整个文件的所有分片都上传成功后，调用该方法
+                    var data = { 'task_id': task_id, 'filename': file.source['name'] };
+                    // $.get('{{ url_for("auth.upload_success") }}', data);
+                    // $('.progress-bar').css('width', '100%');
+                    // $('.progress-bar').text('100%');
+                    // $('.progress-bar').addClass('progress-bar-success');
+                    // $('.progress-bar').text('上传完成');
+                    $.get('{{ url_for("auth.upload_success") }}', data, function(data){
+                        alert(data.uploadfile)
+                    });
+                    $('.progress-bar').css('width', '100%');
+                    $('.progress-bar').text('100%');
+                    $('.progress-bar').addClass('progress-bar-success');
+                    $('.progress-bar').text('上传完成');
+
+                });
+        
+                uploader.on('uploadError', function(file) { // 上传过程中发生异常，调用该方法
+                    $('.progress-bar').css('width', '100%');
+                    $('.progress-bar').text('100%');
+                    $('.progress-bar').addClass('progress-bar-danger');
+                    $('.progress-bar').text('上传失败');
+                });
+        
+                uploader.on('uploadComplete', function(file) { // 上传结束，无论文件最终是否上传成功，该方法都会被调用
+                    $('.progress-bar').removeClass('active progress-bar-striped');
+                });
+
+                $('#upmoive').on('click', function(){
+                    uploader.upload()
+                });
+        
+                $('#progress').hide();
+            });
+            </script>
+    </body>
+</html>

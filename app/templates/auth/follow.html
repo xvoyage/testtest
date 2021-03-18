@@ -1,0 +1,49 @@
+{% extends "auth/newbase.html" %}
+{% import "auth/_macros.html" as macros %}
+
+{% block head_script %}
+
+{{ super() }}
+<link rel='stylesheet' type='text/css' href="{{url_for('static', filename='css/javbusmain.css')}}">
+<script src="{{url_for('static', filename='js/jquery.masonry.min.js')}}"></script>
+{% endblock %}
+
+
+
+{% block page_content %}
+
+<div id="waterfall" class="masonry" style="position: relative; height: 1569.03px; width: 1870px;">
+  <div id="waterfall">
+    {%for md in vdf%}
+      <div class="item masonry-brick" style="position: absolute; top: 0px; left: 0px;">
+          <a class="movie-box" href="{{md.vlink}}" target="_blank">
+              <div class="photo-frame">
+                  <img src="{{md.img}}" title="{{md.title}}" style="margin-left: -150px;">
+              </div>
+              <div class="photo-info">
+                  <span>{{md.title}}<br>
+                  <date>{{md.name}}</date>
+                  {%if md.status%}
+                  <i class="glyphicon glyphicon-ok" style="color: green;"></i>
+                  {%endif%}
+                  <i class="glyphicon glyphicon-remove" style="color: red;"></i>
+                </span>
+              </div>
+          </a>
+      </div>
+    {%endfor%}
+  </div>
+</div>
+
+
+
+<script language="JavaScript">
+  (function($) {
+      $('#waterfall').masonry({
+          itemSelector: ".item",
+          isAnimated: false,
+          isFitWidth: true
+      });
+  })(jQuery);
+</script>
+{% endblock %}

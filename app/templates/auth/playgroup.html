@@ -1,0 +1,254 @@
+{% extends "auth/newbase.html" %}
+{% import "auth/_macros.html" as macros %}
+{% block head_script %}
+{{ super() }}
+<link rel='stylesheet' type='text/css' href="{{url_for('static', filename='css/uf.css')}}">
+
+{% endblock %}
+{%block sendio%}
+<script type="text/javascript">
+    var socket = io.connect('http://192.168.1.127:80/messagequeue');
+    socket.on('server_response', function(reg){
+        var arrmg = reg.data;
+        if(arrmg){
+            for(i=0; i<arrmg.length; i++){
+                var pid = arrmg[i][0];
+                // var jd = parseInt(parseFloat(arrmg[i][1]) * 100);
+                if(parseInt(pid)> 0){
+                    var jd = parseInt(parseFloat(arrmg[i][1]) * 100);
+                    var jdpre = jd + '%';
+                    // $('#'+pid).attr('aria-valuenow',jd);
+                    // $('#'+pid).attr('style','width:'+jdpre);
+                    // $('#'+pid).text(jdpre);
+                    var prid = 'p'+pid;
+                    var obp = document.getElementById(prid)
+                    if(obp == null){
+                        var html = '<div class="jdt"><div class="progress" style="width: 100%; height: 20px;"><div id ="';
+                        html += prid;
+                        html +='"class="progress-bar progress-bar-success progress-bar-striped" role="progressbar"  aria-valuemin="0" aria-valuemax="100" ></div></div>';
+                        $('#'+pid).append(html);
+                    }
+                    $('#'+prid).attr('aria-valuenow',jd);
+                    $('#'+prid).attr('style','width:'+jdpre);
+                    $('#'+prid).text(jdpre);
+                    // $('#'+pid);
+                    console.log(jd)
+                    if(jd >= 100){
+                        $('#'+pid).children('.jdt').remove()
+                    }
+                }
+                else{
+                    spop({
+                        template: arrmg[i][1],
+                        autoclose: 5000
+                    });
+                }
+            }
+        }
+    });
+</script>
+		
+{%endblock%}
+
+
+{% block page_content %}
+<script type="text/javascript">
+    if(/Android|webOS|iPhone|iPod|BlackBerry/i.test(navigator.userAgent)) {
+        window.location.href = "{{url_for('main.mlist_video')}}";
+    } 
+    // else {
+    // 	window.location.href = "http://news.baidu.com/";
+    // }
+    // var ppid = document.getElementById('ppid')
+    // alert(ppid)
+</script>
+<script type="text/javascript">
+    var comm_select_all = '全选';
+    var comm_cancel_all = '取消';
+
+    $(document).ready(function(){
+        $('#otag').click(function(){
+            $('#bqul').toggleClass("opendiv")
+        })
+        $('#bqul2').click(function(){
+            $('#bqlist2').toggleClass("opendiv")
+        })
+    })
+
+    function checkAll(chkobj) {
+        if ($(chkobj).text().trim() == comm_select_all.trim()) {
+            $(chkobj).children("span").text(comm_cancel_all);
+            $(".checkall input:enabled").prop("checked", true);
+        } else {
+            $(chkobj).children("span").text(comm_select_all);
+            $(".checkall input:enabled").prop("checked", false);
+        }
+    }
+
+    function submitFrom(path){
+        $('#form1').attr("action", path)
+        $('#form1').submit();
+    }
+
+    function change_stats(tag,id,index){
+        var data ={
+            'id': id,
+            'stats': index
+        }
+        $.get("{{url_for('auth.cgstats')}}", data, function(data){
+            var pre = $(tag).parent();
+            pre.find('i').each(function(i,val){
+                if(i<=index){
+                    $(val).attr('style','color:peru;');
+                    $(val).attr('class','glyphicon glyphicon-star')
+                }
+                else{
+                    $(val).attr('style','');
+                    $(val).attr('class','glyphicon glyphicon-star-empty')
+                }
+            });
+        });
+    }
+
+
+
+
+    function delplay(id){
+        var data = {
+            'id': id
+        };
+        $.get("{{url_for('auth.del_play')}}", data, function(data){
+            var litag = $('#'+id);
+            litag.remove()
+        });
+    }
+
+    function otheropenfile(path){
+        var enpath = encodeURI(path);
+        var data = {
+            'path': enpath
+        };
+        $.get("{{url_for('auth.othersoft')}}", data, function(data){
+
+        });
+    }
+
+    function get_message(){
+			$.get("{{url_for('auth.readmg')}}", function(data){
+				// alert(data.data instanceof Array);
+				var arrmg = data.data;
+				if(arrmg){
+                    var htmltext ="<ol>"
+					for(i=0; i<arrmg.length; i++){
+                        htmltext += "<li>"+arrmg[i]+"正在转换中</li>"
+				    }
+                    if(arrmg.length <=0){
+                        htmltext +='<li>当前没有任务执行</li>'
+                    }
+                    htmltext += "</ol>"
+                    spop({
+                            template: htmltext,
+                            autoclose: 5000
+                        });
+			    }
+		    })
+	}
+
+</script>
+
+<div class="content">
+        <div class="">
+            <ol class="breadcrumb">
+                <li><a href="{{url_for('auth.add_video')}}" class="opa"><i class="glyphicon glyphicon-plus"></i>新增</a></li>
+                <li><a href="javascript:;" class="opa " onclick="checkAll(this)"><i class="glyphicon glyphicon-check"></i><span>全选</span></a></li>
+                <li><a href="javascript:;"  class="opa" onclick="submitFrom('/video_del')"><i class="glyphicon glyphicon-trash"></i>删除</a></li>
+                <li class="startl"></li>
+                <li><a href="{{ url_for('auth.list_video',stats=3)}}">精选</a></li>
+                <li><a href="{{ url_for('auth.list_video',tag=9)}}">制服 </a></li>
+                <li><a href="{{ url_for('auth.list_video',ares=0)}}">日本</a></li>
+                <li><a href="{{ url_for('auth.list_video',ares=1)}}">国产</a></li>
+                <li><a href="{{ url_for('auth.list_video',tag=32)}}">无码</a></li>
+                <li><a href="{{ url_for('auth.list_video',ares=2)}}">欧美</a></li>
+                <li><a href="{{ url_for('auth.list_video',tag=70)}}">待定</a></li>
+                <li><a href="{{ url_for('auth.list_video',tag=40)}}">动漫</a></li>
+                <li class="startl"></li>
+                <li><a id="otag" href="javascript:;">标签</a></li>
+                <li><a id="bqul2" href="javascript:;">分类</a></li>
+                <li class="startl"></li>
+                <li><a  href="{{url_for('auth.play_group')}}">播放组</a></li>
+                <li><a  href="javascript:;" onclick="get_message()">任务列表</a></li>
+
+            </ol>
+        </div>
+
+    <form id="form1" method="POST" action="">
+    <div class="imglist">
+
+            {% for m in movielist%}
+            <div class="col-md-6" id="{{m.id}}">
+                <!-- <div class="detail"> -->
+                    <div title="{{m.title}}" style="margin-bottom: 0;">
+                            <video id="v_{{m.id}}" controls poster="{{m.img}}" style="width: 100%;">
+                                <source  type="video/mp4" src="{{m.path}}">
+                            </video>
+                    </div>
+                    <div>
+                        <p title="移除" class="checkall" style="text-align:center; cursor: pointer; background-color: #cccccc;" onclick="delplay('{{m.id}}')">
+                            <span>{{ m.name }}</span>
+                        </p>
+                    </div>
+                <!-- </div> -->
+            </div>
+            {% endfor %}
+
+
+    </div>
+    <div id="bqul" class="tagdiv">
+        <ul>
+            {% for i in tags %}
+            <li>
+                <a href="{{ url_for('auth.list_video',tag=i.id)}}" class="">{{i.name}}</a>
+            </li>
+            {% endfor%}
+            <i class="placeholder"></i>
+            <i class="placeholder"></i>
+            <i class="placeholder"></i>
+            <i class="placeholder"></i>
+            <i class="placeholder"></i>
+            <i class="placeholder"></i>
+            <i class="placeholder"></i>
+            <i class="placeholder"></i>
+            <i class="placeholder"></i>
+            <i class="placeholder"></i>
+            <i class="placeholder"></i>
+            <i class="placeholder"></i>
+            <i class="placeholder"></i>
+        </ul>
+    </div>
+
+    <div id="bqlist2" class="tagdiv">
+        <ul>
+            {% for i in cateids %}
+            <li>
+                <a href="{{ url_for('auth.list_video',cate=i.id)}}" class="">{{i.name}}</a>
+            </li>
+            {% endfor%}
+            <i class="placeholder"></i>
+            <i class="placeholder"></i>
+            <i class="placeholder"></i>
+            <i class="placeholder"></i>
+            <i class="placeholder"></i>
+            <i class="placeholder"></i>
+            <i class="placeholder"></i>
+            <i class="placeholder"></i>
+            <i class="placeholder"></i>
+            <i class="placeholder"></i>
+            <i class="placeholder"></i>
+            <i class="placeholder"></i>
+            <i class="placeholder"></i>
+            <i class="placeholder"></i>
+        </ul>
+    </div>
+</form>
+</div>
+{% endblock %}

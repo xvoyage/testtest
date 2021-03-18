@@ -1,0 +1,210 @@
+{% extends "auth/base.html" %}
+
+{% block head_script %}
+{{ super() }}
+<script src="//cdn.ckeditor.com/4.9.2/standard/ckeditor.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+<link href="{{url_for('static', filename='css/uf.css')}}" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="../../static/js/webuploader/webuploader.css">
+<script type="text/javascript" src="../../static/js/webuploader/webuploader.html5only.js"></script>
+<link type="text/css" rel="stylesheet" href="../../static/css/uf.css">
+<link type="text/css" rel="stylesheet" href="../../static/css/imgd.css">
+{% endblock %}
+
+{% block page_content %}
+
+
+<div class="mainpand">
+    <div class="">
+        <ol class="breadcrumb">
+            <li><a href="#">首页</a></li>
+            <li><a href="#">相册</a></li>
+            <li class="active">新增</li>
+        </ol>
+    </div>
+
+
+    <div class="">
+
+    </div>
+
+    <div class="maincontrol">
+        <form class="form-horizontal" method="POST">
+            <div class="form-group">
+                <label class="col-sm-2 control-label" >标签</label>
+                <div class="col-sm-3">
+
+                    {{form.tids(**{'class':'form-control select2 '})}}
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">星级</label>
+                <div class="col-sm-3">
+                    {{form.stats(**{'class':'form-control select2'})}}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">标题</label>
+                <div class="col-sm-3">
+                    <!-- <input type="text" class="form-control"> -->
+                    {{form.name(**{'class':'form-control'})}}
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">女忧</label>
+                <div class="col-sm-3">
+                    <!-- <input type="text" class="form-control"> -->
+                    {{form.actorid(**{'class':'form-control select2'})}}
+                </div>
+            </div>
+            <div class="form-group">
+            <label class="col-sm-2 control-label">图片
+
+            </label>
+            <div class="col-sm-3">
+            <div class="ufilemain">
+                <div class="leftinput" id="fe">
+                    <!-- <div class="flname">Doctor Rei28.jpg</div> -->
+                </div>
+                <div class="rightbutton">
+                    上传文件
+                    <input type="file" id="upload" multiple="multiple" name="upload" accept=".jpg, .jpeg, .png, .gif" onchange="change_upfile_name(this)">
+                </div>
+            </div>
+            </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-4 col-sm-offset-2">
+                        <!-- <button type="submit" class="btn btn-default">保存提交</button> -->
+                        {{form.submit(**{'class':'btn btn-default'})}}
+                        <button type="button" class="btn btn-default" onclick="javascript:history.back(-1);">返回上一步</button>
+                </div>
+            </div>
+                  {{ form.hidden_tag() }}
+                  {{form.imgurls(**{'type':'hidden'})}}
+
+                  <div id='imgshow' class="row ptlist">
+                    <!-- <div class="col-xs-4 col-md-2">
+                      <a href="#" class="thumbnail ">
+                        <img src="../../static/upload/image/2/1.jpg" alt="...">
+                      </a>
+                      <p>删除</p>
+                    </div> -->
+                  </div>
+
+                  <div id='ptlist' class="row ptlist">
+                    {% if imgslist %}
+                    {% for img in imgslist%}
+                    <div class="col-xs-4 col-md-2">
+                      <div class="thumbnail ">
+                        <img src="{{img}}">
+                        <div class="mg">
+                        <p onclick="changeshouye(this, '{{ photo.id }}', '{{img}}')">设置为封面</p>
+                        <p onclick="del_img(this, '{{ photo.id }}', '{{img}}')">删除</p>
+                        </div>
+                      </div>
+                      
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+                  </div>
+
+
+        </form>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    $(document).ready(function() {
+
+        $('#submit').click(function(){
+            var imgs = $('#imgshow img')
+            var imgdata = ''
+            $.each(imgs, function(i,element){
+                imgdata += element.src;
+            });
+            $('#imgurls').val(imgdata);
+        });
+                                
+    
+    });
+
+    function change_upfile_name(source){
+        var files = source.files;
+        for(var i=0;i<files.length;i++){
+            var file = files[i];
+            if(window.FileReader){
+                var fr = new FileReader();
+                fr.onloadend = function(e){
+                    var hten = '<div class="col-xs-4 col-md-2"><div class="thumbnail ">';
+                    hten += '<img src="'+ e.target.result +'" ><div class="mg" style="height:30px"><p onclick="removeimg(this)">删除</p></div></div></div>';
+                    
+                    $('#imgshow').prepend(hten);
+                }
+                fr.readAsDataURL(file);
+            }
+        }
+    }
+
+    function removeimg(source){
+        $(source).parent().parent().parent().remove()
+    }
+
+    function del_img(elg,id,img){
+        var corwd_id = id;
+        var corwd_img = img;
+        var formData = new FormData();
+        formData.append('id', corwd_id);
+        formData.append('img', corwd_img);
+        $.ajax({
+            url : '/img_del',
+            dataType: 'json',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(data){
+                $(elg).parent().parent().parent().remove()
+            }
+        })
+
+    }
+
+    function changeshouye(elg, id, url){
+        var corwd_id = id;
+        var corwd_img = url;
+        var formData = new FormData();
+        formData.append('id', corwd_id);
+        formData.append('img', corwd_img);
+        $.ajax({
+            url : '/img_change',
+            dataType: 'json',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(data){
+                var tagno = $(elg).parent().parent().parent();
+                var firstelg = $('#ptlist div').eq(0);
+                firstelg.before(tagno);
+            }
+        })
+
+    }
+</script>
+    <script type="text/javascript">
+        $('.select2').select2(
+            {
+                placeholder : '请选择'
+            }
+        );
+
+</script>
+
+    
+
+{% endblock %}

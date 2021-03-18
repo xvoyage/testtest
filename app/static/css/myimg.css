@@ -1,0 +1,118 @@
+.imgshow{
+    text-align: center;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.imgshow img{
+    cursor: pointer;
+    padding: 5px;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    box-shadow: 0 0 8px 0 rgba(0,0,0,0.2);
+    /* max-height: 900px; */
+    max-width: 100%;
+}
+
+.imgcotent{
+    background-color: #e7e7e7;
+    margin-top: -20px;
+}
+.page-header h2{
+    padding-left: 20px;
+}
+
+.thumbnail{
+    position: relative;
+}
+.imgslist{
+    margin-top: 10px;
+}
+.mg{
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    width: 100%;
+    height: 50px;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 4px;
+    border-left: 1px solid transparent;
+    border-right: 1px solid transparent;
+}
+
+.listimg{
+    /* padding: 4px;
+    
+    box-sizing: content-box; */
+    margin: 0px auto;
+    margin-bottom: 10px;
+    position: relative;
+    color: white;
+    width: 228px;
+    height: 342px;
+}
+.listimg img{
+    width: 100%;
+    height: 100%;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    box-shadow: 0 0 8px 0 rgba(0,0,0,0.2);
+    object-fit: cover;
+
+}
+.footer-img i{
+    color: white;
+    vertical-align: middle;
+}
+.details-foot input[type=checkbox]{
+    /* vertical-align: 2px; */
+    margin: 0;
+}
+
+.yq{
+    display: inline-block;
+    width: 300px; height: 300px;
+    padding: 10px;
+    border: 10px solid;
+    border-radius: 50%;
+    /* background-color: currentColor; */
+
+    background-clip: content-box;
+}
+.xuanzhuan{
+    width: 200px;
+    height: 1px;
+    background-color: #e7e7e7;
+    transform: rotate(9deg);
+    margin: 5px auto;
+    border-top-width: 2px;
+    border: solid transparent;
+    border-top-color: #2b2b2b;
+    border-radius: 5px;
+    display: inline-block;
+}
+.yq p{
+    display:inline-block;
+    width: 200px;
+    height: 200px;
+}
+.mg p{
+    margin: 0;
+    padding: 0;
+}
+.remarks p{
+    font-size: 12px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.details-foot{
+    position: relative;
+    font-size: 12px;
+}
+.footer-img{
+    position: absolute;
+    top: 0;
+    right: 10px;
+}

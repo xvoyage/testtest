@@ -1,0 +1,261 @@
+{%extends "auth/newbase.html"%}
+{% import "auth/_macros.html" as macros %}
+{%block title%}
+标签管理
+{%endblock%}
+{%block sendio%}
+{%endblock%}
+{%block head_css%}
+{{super()}}
+<!-- <link rel="stylesheet" href="{{url_for('static', filename='css/tag.css')}}"> -->
+<link rel="stylesheet" href="../../static/css/plugins/sweetalert/sweetalert.css">
+<link rel="stylesheet" href="{{url_for('static', filename='css/actor.css')}}">
+{%endblock%}
+{% block head_script %}
+{{super()}}
+<script src="//cdn.ckeditor.com/4.9.2/standard/ckeditor.js"> </script>
+<link href="../../static/css/plugins/cropper/cropper.css" rel="stylesheet">
+<link href="../../static/css/plugins/cropper/main.css" rel="stylesheet">
+<link rel="stylesheet" href="{{url_for('static', filename='css/actor.css')}}">
+{%endblock%}
+{%block page_content%}
+<form class="form-horizontal" method="POST">
+    <div class="col-md-2">
+        <div class="box">
+            <div class="file-manager">
+                <!-- <a href="{{url_for('auth.add_arctor')}}" class="btn btn-primary btn-block">新增</a> -->
+                {{ form.btnSubmit(**{'class':'btn btn-primary btn-block'})}}
+                <div class="line"></div>
+                <h5>操作</h5>
+                <ul class="folder-list">
+                    <li><a href="javascript:history.go(-1);"><i class="glyphicon glyphicon-share-alt"></i>返回</a></li>
+                    <!-- <li><a href="#"><i class="fa fa-heart"></i><span>喜欢</span></a> -->
+                    </li>
+                </ul>
+                <h5>导航</h5>
+                <ul class="folder-list">
+                    <li><a href="{{url_for('auth.list_video')}}"><i class="glyphicon glyphicon-cd"></i>视频</a></li>
+                    <li><a href="{{url_for('auth.Tag_list')}}"><i class="glyphicon glyphicon-tags"></i>标签</a></li>
+                    <li><a href="{{url_for('auth.list_actor')}}"><i class="glyphicon glyphicon-user"></i>演员</a></li>
+                    <li><a href="{{url_for('img.list_photo')}}"><i class="glyphicon glyphicon-picture"></i>图片</a></li>
+                    <li><a href="{{url_for('auth.diskshow')}}"><i class="glyphicon glyphicon-cog"></i>设置</a></li>
+                </ul>
+            </div>
+        </div>
+    
+    </div>
+    
+    <div class="col-md-10">
+      <div style="font-size: 14px;" class="box">
+        
+          <div class="form-group">
+              <label class="col-sm-2 control-label">头像</label>
+              <div class="col-sm-3">
+                  <div class="avatar-view" title="Change the avatar">
+                      <img {%if form.imgurl.data %}src='{{form.imgurl.data}}'{%endif%} class="add" title="继续上传" style="cursor: pointer;" data-toggle="modal" data-target="#myModal5">
+                  </div>
+                  {{ form.imgurl(**{'type':'hidden'})}}
+              </img>
+              </div>
+          </div>
+          <div class="form-group">
+              <label class="col-sm-2 control-label">演员</label>
+              <div class="col-sm-3">
+                      {{ form.txtTitle(**{'class':'form-control'})}}
+              </div>
+          </div>
+          <div class="form-group">
+              <label class="col-sm-2 control-label">排序</label>
+              <div class="col-sm-3">
+                      {{ form.txtSortId(**{'class':'form-control','value':'99'})}}
+              </div>
+          </div>
+          <div class="form-group">
+              <label class="col-sm-2 control-label">描述</label>
+              <div class="col-sm-5">
+                      {{ form.txtDescription()}}
+              </div>
+          </div>
+          {{ form.hidden_tag() }}
+      </div>
+    </div>
+    <div class="modal inmodal fade" id="myModal5" tabindex="-1" role="dialog" aria-hidden="true" style="display: none;">
+      <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+              <div class="modal-body">
+                  <div class="row">
+                      <div class="col-md-9">
+                        <!-- <h3 class="page-header">Demo:</h3> -->
+                        <div class="img-container">
+                          <img  alt="Picture">
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <!-- <h3 class="page-header">Preview:</h3> -->
+                        <div class="docs-preview clearfix">
+                          <div class="img-preview" style="width: 148px; height: 148px;" ></div>
+                        </div>
+                  
+                        <!-- <h3 class="page-header">Data:</h3> -->
+                        <div class="docs-data">
+                          <div class="input-group">
+                            <label class="input-group-addon" for="dataX">X</label>
+                            <input class="form-control" id="dataX" type="text" placeholder="x">
+                            <span class="input-group-addon">px</span>
+                          </div>
+                          <div class="input-group">
+                            <label class="input-group-addon" for="dataY">Y</label>
+                            <input class="form-control" id="dataY" type="text" placeholder="y">
+                            <span class="input-group-addon">px</span>
+                          </div>
+                          <div class="input-group">
+                            <label class="input-group-addon" for="dataWidth">Width</label>
+                            <input class="form-control" id="dataWidth" type="text" placeholder="width">
+                            <span class="input-group-addon">px</span>
+                          </div>
+                          <div class="input-group">
+                            <label class="input-group-addon" for="dataHeight">Height</label>
+                            <input class="form-control" id="dataHeight" type="text" placeholder="height">
+                            <span class="input-group-addon">px</span>
+                          </div>
+                          <div class="input-group">
+                            <label class="input-group-addon" for="dataRotate">Rotate</label>
+                            <input class="form-control" id="dataRotate" type="text" placeholder="rotate">
+                            <span class="input-group-addon">deg</span>
+                          </div>
+                        </div>
+                      </div>
+                  </div>
+                  <div class="row">
+                      <div class="col-md-9 docs-buttons">
+                        <!-- <h3 class="page-header">Toolbar:</h3> -->
+                        <div class="btn-group">
+                          <button class="btn btn-primary" data-method="setDragMode" data-option="move" type="button" title="Move">
+                            <span class="docs-tooltip" data-toggle="tooltip" title="$().cropper(&quot;setDragMode&quot;, &quot;move&quot;)">
+                              <span class="icon icon-move"></span>
+                            </span>
+                          </button>
+                          <button class="btn btn-primary" data-method="rotate" data-option="-45" type="button" title="Rotate Left">
+                            <span class="docs-tooltip" data-toggle="tooltip" title="$().cropper(&quot;rotate&quot;, -45)">
+                              <span class="icon icon-rotate-left"></span>
+                            </span>
+                          </button>
+                          <button class="btn btn-primary" data-method="rotate" data-option="45" type="button" title="Rotate Right">
+                              <span class="docs-tooltip" data-toggle="tooltip" title="$().cropper(&quot;rotate&quot;, 45)">
+                                <span class="icon icon-rotate-right"></span>
+                              </span>
+                            </button>
+                        </div>
+                  
+                        <div class="btn-group">
+                          <button class="btn btn-primary" data-method="disable" type="button" title="Disable">
+                            <span class="docs-tooltip" data-toggle="tooltip" title="$().cropper(&quot;disable&quot;)">
+                              <span class="icon icon-lock"></span>
+                            </span>
+                          </button>
+                          <button class="btn btn-primary" data-method="enable" type="button" title="Enable">
+                            <span class="docs-tooltip" data-toggle="tooltip" title="$().cropper(&quot;enable&quot;)">
+                              <span class="icon icon-unlock"></span>
+                            </span>
+                          </button>
+                          <button class="btn btn-primary" data-method="clear" type="button" title="Clear">
+                            <span class="docs-tooltip" data-toggle="tooltip" title="$().cropper(&quot;clear&quot;)">
+                              <span class="icon icon-remove"></span>
+                            </span>
+                          </button>
+                          <button class="btn btn-primary" data-method="reset" type="button" title="Reset">
+                            <span class="docs-tooltip" data-toggle="tooltip" title="$().cropper(&quot;reset&quot;)">
+                              <span class="icon icon-refresh"></span>
+                            </span>
+                          </button>
+                          <label class="btn btn-primary btn-upload" for="inputImage" title="Upload image file">
+                            <input class="sr-only" id="inputImage" name="file" type="file" accept="image/*">
+                            <span class="docs-tooltip" data-toggle="tooltip" title="Import image with Blob URLs">
+                              <span class="icon icon-upload"></span>
+                            </span>
+                          </label>
+                          <button class="btn btn-primary" data-method="destroy" type="button" title="Destroy">
+                            <span class="docs-tooltip" data-toggle="tooltip" title="$().cropper(&quot;destroy&quot;)">
+                              <span class="icon icon-off"></span>
+                            </span>
+                          </button>
+                        </div>
+                  
+                        <!-- <div class="btn-group btn-group-crop">
+                          <button class="btn btn-primary" data-method="getCroppedCanvas" type="button">
+                            <span class="docs-tooltip" data-toggle="tooltip" title="$().cropper(&quot;getCroppedCanvas&quot;)">
+                              Get Cropped Canvas
+                            </span>
+                          </button>
+                        </div> -->
+                  
+                        <!-- Show the cropped image in modal -->
+                        <div class="modal fade docs-cropped" id="getCroppedCanvasModal" aria-hidden="true" aria-labelledby="getCroppedCanvasTitle" role="dialog" tabindex="-1">
+                          <div class="modal-dialog">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <button class="close" data-dismiss="modal" type="button" aria-hidden="true">&times;</button>
+                                <h4 class="modal-title" id="getCroppedCanvasTitle">Cropped</h4>
+                              </div>
+                              <div class="modal-body"></div>
+                              <!-- <div class="modal-footer">
+                                <button class="btn btn-primary" data-dismiss="modal" type="button">Close</button>
+                              </div> -->
+                            </div>
+                          </div>
+                        </div><!-- /.modal -->
+                  
+                      
+                  
+                      </div><!-- /.docs-buttons -->
+                  
+                      <div class="col-md-3 docs-toggles">
+                        <!-- <h3 class="page-header">Toggles:</h3> -->
+                        <div class="btn-group btn-group-justified" data-toggle="buttons">
+                          <label class="btn btn-primary" data-method="setAspectRatio" data-option="1.3333333333333333" title="Set Aspect Ratio">
+                            <input class="sr-only" id="aspestRatio2" name="aspestRatio" value="1.3333333333333333" type="radio">
+                            <span class="docs-tooltip" data-toggle="tooltip" title="$().cropper(&quot;setAspectRatio&quot;, 4 / 3)">
+                              4:3
+                            </span>
+                          </label>
+                          <label class="btn btn-primary" data-method="setAspectRatio" data-option="1" title="Set Aspect Ratio">
+                            <input class="sr-only" id="aspestRatio3" name="aspestRatio" value="1" type="radio">
+                            <span class="docs-tooltip" data-toggle="tooltip" title="$().cropper(&quot;setAspectRatio&quot;, 1 / 1)">
+                              1:1
+                            </span>
+                          </label>
+                          <label class="btn btn-primary" data-method="setAspectRatio" data-option="0.6666666666666666" title="Set Aspect Ratio">
+                            <input class="sr-only" id="aspestRatio4" name="aspestRatio" value="0.6666666666666666" type="radio">
+                            <span class="docs-tooltip" data-toggle="tooltip" title="$().cropper(&quot;setAspectRatio&quot;, 2 / 3)">
+                              2:3
+                            </span>
+                          </label>
+                        </div>
+                  
+                        <div class="dropdown dropup docs-options">
+                          <button class="btn btn-primary" data-method="getCroppedCanvas" type="button">
+                              <span class="docs-tooltip" data-toggle="tooltip" title="$().cropper(&quot;getCroppedCanvas&quot;)" data-dismiss="modal">
+                                保存
+                              </span>
+                            </button>
+                        </div><!-- /.dropdown -->
+                      </div><!-- /.docs-toggles -->
+                    </div>
+              </div>
+  
+              </div>
+              </div>
+              </div>
+  {{ckeditor.load()}}
+  {{ckeditor.config(name='txtDescription')}}
+</form>
+{%endblock%}
+{% block footer_script %}
+<!-- <script src="../../static/js/plugins/cropper/jquery.min.js"></script> -->
+<!-- <script src="../../static/js/plugins/cropper/bootstrap.min.js"></script> -->
+<script src="../../static/js/jquery.min.js?v=2.1.4"></script>
+<script src="../../static/js/bootstrap.min.js?v=3.3.6"></script>
+<script src="../../static/js/plugins/cropper/cropper.js"></script>
+<script src="../../static/js/plugins/cropper/main.js"></script>
+{% endblock%}
+

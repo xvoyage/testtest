@@ -1,0 +1,88 @@
+{% extends "auth/newbase.html" %}
+{% import "auth/_macros.html" as macros %}
+{% block head_script %}
+{{ super() }}
+<link rel='stylesheet' type='text/css' href="{{url_for('static', filename='css/uf.css')}}">
+{% endblock %}
+{%block sendio%}
+<script type="text/javascript">
+    var socket = io.connect('http://192.168.1.127:80/messagequeue');
+    socket.on('server_response', function(reg){
+        var arrmg = reg.data;
+        if(arrmg){
+            for(i=0; i<arrmg.length; i++){
+                var pid = arrmg[i][0];
+                // var jd = parseInt(parseFloat(arrmg[i][1]) * 100);
+                if(parseInt(pid)> 0){
+                    var jd = parseInt(parseFloat(arrmg[i][1]) * 100);
+                    var jdpre = jd + '%';
+                    $('#'+pid).attr('aria-valuenow',jd);
+                    $('#'+pid).attr('style','width:'+jdpre);
+                    $('#'+pid).text(jdpre);
+                }
+                else{
+                    spop({
+                        template: arrmg[i][1],
+                        autoclose: 5000
+                    });
+                }
+            }
+        }
+    });
+</script>
+		
+{%endblock%}
+
+
+
+{% block page_content %}
+
+<div class="box" style="margin: 0 20px;">
+<form method="POST">
+    <ul class="nav nav-tabs">
+        <li role="presentation" ><a href="{{url_for('auth.diskshow')}}">硬盘</a></li>
+        <li role="presentation"><a href="{{url_for('auth.setting')}}">设置</a></li>
+        <li role="presentation" class="active"><a href="#">任务列表</a></li>
+    </ul>
+<h4 style="margin-top: 20px;
+border-left: 8px solid #eee;
+padding: 5px;">任务列表</h4>
+<table class="table table-hover">
+    <tr>
+        <td>序号</td>
+        <td>任务名</td>
+        <td>文件路径</td>
+        <td>状态</td>
+        <td>进度</td>
+        <td>操作</td>
+    </tr>
+    {%for mg in mglist%}
+
+    <tr>
+        <td>{{mg.id}}</td>
+        <td>{{mg.name}}</td>
+        <td>{{mg.path}}</td>
+        {% if mg.zt%}
+        <td>分割</td>vido_
+        {%else%}
+        <td>合并</td>
+        {%endif%}
+        <td>
+            <div style="margin: 0;" class="progress">
+                <div id ="{{mg.video_id}}" class="progress-bar progress-bar-success progress-bar-striped" role="progressbar"  aria-valuemin="0" aria-valuemax="100" >
+                </div>
+            </div>
+        </td>
+        <td><a href="{{url_for('auth.list_task', id=mg.vid)}}">恢复</a></td>
+
+    </tr>
+    {%endfor%}
+
+</table>
+
+
+</form>
+</div>
+
+
+{% endblock %}

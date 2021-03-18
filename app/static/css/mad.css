@@ -1,0 +1,212 @@
+#container{max-height: 650px; overflow: auto;}
+#tree { float:left; width:200px; border-right:1px solid silver; overflow:auto; padding:0px 0; height: 650px !important; }
+#data { margin-left:200px; height: 650px !important; overflow: auto; }
+#data textarea { margin:0; padding:0; height:100%; width:100%; border:0; background:white; display:block; line-height:18px; resize:none; }
+#data, #code { font: normal normal normal 12px/18px 'Consolas', monospace !important; }
+#tree .folder { background:url('../img/file_sprite.png') right bottom no-repeat; }
+#tree .file { background:url('../img/file_sprite.png') 0 0 no-repeat; }
+#tree .file-pdf { background-position: -32px 0 }
+#tree .file-as { background-position: -36px 0 }
+#tree .file-c { background-position: -72px -0px }
+#tree .file-iso { background-position: -108px -0px }
+#tree .file-htm, #tree .file-html, #tree .file-xml, #tree .file-xsl { background-position: -126px -0px }
+#tree .file-cf { background-position: -162px -0px }
+#tree .file-cpp { background-position: -216px -0px }
+#tree .file-cs { background-position: -236px -0px }
+#tree .file-sql { background-position: -272px -0px }
+#tree .file-xls, #tree .file-xlsx { background-position: -362px -0px }
+#tree .file-h { background-position: -488px -0px }
+#tree .file-crt, #tree .file-pem, #tree .file-cer { background-position: -452px -18px }
+#tree .file-php { background-position: -108px -18px }
+#tree .file-jpg, #tree .file-jpeg, #tree .file-png, #tree .file-gif, #tree .file-bmp { background-position: -126px -18px }
+#tree .file-ppt, #tree .file-pptx { background-position: -144px -18px }
+#tree .file-rb { background-position: -180px -18px }
+#tree .file-text, #tree .file-txt, #tree .file-md, #tree .file-log, #tree .file-htaccess { background-position: -254px -18px }
+#tree .file-doc, #tree .file-docx { background-position: -362px -18px }
+#tree .file-zip, #tree .file-gz, #tree .file-tar, #tree .file-rar { background-position: -416px -18px }
+#tree .file-js { background-position: -434px -18px }
+#tree .file-css { background-position: -144px -0px }
+#tree .file-fla { background-position: -398px -0px }
+
+.addmain{
+    background-color: white;
+    padding: 15px;
+}
+/* .form-control{
+    border-color: white !important;
+} */
+
+.ninput{
+    background: none repeat scroll 0 0 rgba(0, 0, 0, 0);
+    border: medium none;
+    font-size: 14px;
+    margin-top: 10px;
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+}
+
+.ninput:focus{
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+}
+.mycheckbox{
+    padding: 6px 12px !important;
+    
+}
+
+.orinput input{
+    margin-top: 0;
+}
+.content{
+    height: 650px !important;
+}
+.content ul{
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.content ul::after{
+    display: block;
+    content: '';
+    clear: both;
+}
+.content ul li{
+    float: left;
+    width: 100px;
+    /* height: 50px; */
+    padding: 10px;
+    cursor: pointer;
+}
+.content ul li i{
+    font-size: 50px;
+    color: burlywood;
+}
+
+.content ul li:hover{
+    background-color: #dbdce0;
+}
+
+.content ul li p{
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.header{
+    height: 40px;
+    line-height: 40px;
+    margin: 5px 0;
+}
+.header i{
+    font-size: 20px;
+    padding: 10px;
+    cursor: pointer;
+}
+.header > div{
+    display: inline-block;
+    height: 40px;
+}
+.dizhi{
+    border: 1px solid #ebebeb;
+    height: 30px !important;
+    box-sizing: border-box;
+    /* vertical-align: middle; */
+    line-height: 30px;
+    font-size: 12px;
+    padding: 0 12px;
+}
+.dizhi i{
+    font-size: 12px;
+}
+.dizhi a{
+    text-decoration: none;
+    color:#676a6c
+}
+
+.dizhi a:hover{
+    text-decoration: underline;
+}
+
+.mgfooter{
+    position: relative;
+    background-color: #f6f8f8;
+    padding: 5px;
+    /* height: 40px; */
+    line-height: 30px;
+}
+.tright{
+    position: absolute;
+    right: 5px;
+    top: 5px;
+}
+.fileup{
+    width: 804px;
+    margin: 0 auto;
+    margin-top: 6%;
+    
+    
+}
+.fileup .ibox-content{
+    padding: 0;
+}
+.oversecn{
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 99999;
+    overflow: hidden;
+    /* display: none; */
+    transform: scale(0);
+    transition: all 0.3s;
+}
+.oversecn_open{
+    /* display: block; */
+    transform: scale(1);
+}
+
+.imgshow{
+    position: relative;
+    overflow: hidden;
+}
+.imgop{
+    transition: all 0.3s;
+    position: absolute;
+    width: 100%;
+    bottom: -50px;
+    background-color:rgba(0, 0, 0, 0.5);
+}
+.imgshow:hover .imgop{
+    bottom: 0;
+}
+.imgshow p{
+    text-align: center;
+    font-weight: 800;
+    color: white;
+    margin: 0;
+    padding: 2px;
+    cursor: pointer;
+}
+.imgop input[type='file']{
+    position: absolute;
+    top: 0;
+    right: 0;
+    min-width: 100%;
+    min-height: 100%;
+    opacity: 0;
+    cursor: inherit;
+    display: block;
+}
+
+.loading{
+    position: absolute;
+    right: 0;
+    top: 5px;
+    display: none;
+}
+.loading img{
+    height: 20px;
+    cursor: pointer;
+}
+

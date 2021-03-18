@@ -1,0 +1,73 @@
+{% extends "auth/newbase.html" %}
+{% import "auth/_macros.html" as macros %}
+
+{% block head_script %}
+
+{{ super() }}
+<link rel='stylesheet' type='text/css' href="{{url_for('static', filename='css/javbusmain.css')}}">
+<link rel='stylesheet' type='text/css' href="{{url_for('static', filename='css/javdb.css')}}">
+<script src="{{url_for('static', filename='js/jquery.masonry.min.js')}}"></script>
+{% endblock %}
+
+
+
+{% block page_content %}
+<div class="jhead">
+  <a href="{{url_for('main.javdb',vft=0)}}">全部</a>
+  <a href="{{url_for('main.javdb')}}">可下载</a>
+  <a href="{{url_for('main.javdb',vft=2)}}">字幕</a>
+</div>
+<div id="waterfall" class="masonry" style="position: relative; height: 1569.03px; width: 1870px;">
+  <!-- <div id="waterfall"> -->
+    {%for md in javdbmode%}
+      <div class="item masonry-brick" style="position: absolute; top: 0px; left: 0px;">
+          <a class="movie-box" href="{{md.avlink}}" target="_blank">
+              <div class="photo-frame">
+                  <img src="{{md.samle_img}}" title="{{md.title}}">
+              </div>
+              <div class="photo-info">
+                  <span>{{md.title}}<br>
+                  <div class="item-tag">
+                    {%if md.isdown %}
+                      <button class="btn btn-xs btn-success" disabled="disabled" title="">可下载</button>
+                    {%endif%}
+                    {%if md.istoday%}
+                      <button class="btn btn-xs btn-danger" disabled="disabled" title="">今日新種</button>
+                    {%endif%}
+                    {%if md.iszimu%}
+                      <button class="btn btn-xs btn-warning" disabled="disabled" title="">字幕</button>
+                    {%endif%}
+                  </div>
+                  <date>{{md.fanhao}}</date> / <date>{{md.dtime}}</date></span>
+                  
+              </div>
+          </a>
+      </div>
+    {%endfor%}
+  <!-- </div> -->
+</div>
+
+<div class="text-center hidden-xs">
+  {%if pages%}
+    <ul class="pagination pagination-lg">
+        {%for page in pages%}
+          <li {%if page[2]%} class="active"{%endif%}>
+            <a href="{{page[0]}}">{{page[1]}}</a>
+          </li>
+        {%endfor%}
+    </ul>
+  {%endif%}
+</div>
+
+
+
+<script language="JavaScript">
+  (function($) {
+      $('#waterfall').masonry({
+          itemSelector: ".item",
+          isAnimated: false,
+          isFitWidth: true
+      });
+  })(jQuery);
+</script>
+{% endblock %}

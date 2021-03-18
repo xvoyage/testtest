@@ -1,0 +1,534 @@
+{% extends "auth/newbase.html" %}
+{% import "auth/_macros.html" as macros %}
+{%block title%}
+{{video.title}}
+{%endblock%}
+{%block head_css%}
+{{ super() }}
+<link rel="stylesheet" href="{{url_for('static', filename='css/myvideo.css')}}">
+<link rel="stylesheet" href="{{url_for('static', filename='css/uf.css')}}">
+<link href="//cdn.bootcss.com/video.js/7.0.0-alpha.1/alt/video-js-cdn.css" rel="stylesheet">
+<link href="../static/css/videojs.thumbnails.css" rel="stylesheet">
+{% endblock %}
+{% block head_script %}
+{{ super() }}
+<script type="text/javascript">
+	if(/Android|webOS|iPhone|iPod|BlackBerry/i.test(navigator.userAgent)) {
+		window.location.href = "{{url_for('main.mbshow',id=video.id)}}";
+	} 
+</script>
+{% endblock %}
+{%block sendio%}
+<script type="text/javascript">
+	var socket = io.connect('http://192.168.1.127:80/messagequeue');
+	socket.on('server_response', function(reg){
+				var arrmg = reg.data;
+				console.log(arrmg)
+				if(arrmg){
+					for(i=0; i<arrmg.length; i++){
+						var pid = arrmg[i][0];
+						// var jd = parseInt(parseFloat(arrmg[i][1]) * 100);
+						if(parseInt(pid)> 0){
+							var jd = parseInt(parseFloat(arrmg[i][1]) * 100);
+							var jdpre = jd + '%';
+							// $('#'+pid).attr('aria-valuenow',jd);
+							// $('#'+pid).attr('style','width:'+jdpre);
+							// $('#'+pid).text(jdpre);
+							
+							var prid = 'p'+pid;
+							var obp = document.getElementById(prid)
+							if(obp == null){
+								var html = '<div class="progress" style=" margin: 0; width: 100%; height: 50px;"><div id ="';
+								html += prid;
+								html +='"class="progress-bar progress-bar-success progress-bar-striped" role="progressbar"  aria-valuemin="0" aria-valuemax="100" ></div>';
+								$('#'+pid).attr('class','row imgprocess')
+								$('#'+pid).append(html);
+							}
+							$('#'+prid).attr('aria-valuenow',jd);
+							$('#'+prid).attr('style','width:'+jdpre);
+							$('#'+prid).text(jdpre);
+							// $('#'+pid);
+							console.log(jd)
+							if(jd >= 100){
+								// $('#'+pid).children('.jdt').remove()
+								$('.progress').remove()
+								$('#'+pid).attr('class','row')
+							}
+						}
+						else{
+							spop({
+								template: arrmg[i][1],
+								autoclose: 5000
+							});
+						}
+					}
+				}
+			});
+</script>
+{%endblock%}
+		
+{% block page_content %}
+
+
+		<div class="container">
+			<div class="row">
+				<div class="col-md-12">
+					<h2>
+						{{video.title}}
+					</h2>
+				</div>
+			</div>
+			<div class="row">
+				<div id="vidmain" class="col-md-12 style="margin: 20px 0 ">
+					<div class="vdmainbd" >
+						<div class="videobg">
+							{% if video.videopath %}
+							<video id='mvideo' class="video-js vjs-big-play-centered vjs-default-skin vjs-fluid" controls preload="auto"   data-setup="{}"
+								poster="{{video.img}}" preload="auto">
+								<source src="{{video_file.video_url}}" type="video/mp4">
+								{%if video_file.zimu %}
+								<track label="text"  kind="subtitles" srclang="de" src="{{video_file.zimu}}" default>
+								{%endif%}
+							{%else%}
+							<img src="{{video.img}}">
+							{%endif%}
+							</video>
+						</div>
+
+						<!-- <div class="bgleft" style="background-image: url('{{video.img}}')">
+						</div> -->
+						<div class="bgright" style="display: none">
+							<div class="add_wd">
+								<form method="POST">
+									<div class="wd_head">
+										<a href="#" onclick="hide_wdf()">X</a>
+									</div>
+									<div class="wd_main">
+										<div id="uimg">
+											<!-- <img class='wd_img'src="/static/upload/image/2020/6/23/JURA21C.jpg"> -->
+											<div class="nullimg"></div>
+										</div>
+
+										<div class="divtime">
+											<span>时间：</span>
+											<span id='st' class="spaninput">0</span>
+											<span><a class="btn btn-default" href="javascript:;" onclick="hq_localtime()">获取时间</a></span>
+											<input id='tvalue' type="hidden">
+											<input id='imgurl' type="hidden" value="{{video.img}}">
+											<input id='videoid' type="hidden" value="{{video.id}}">
+										</div>
+										<div style="margin: 10px 0px; padding: 1px;">
+											<a class="btn btn-default" style="width: 200px" id="adddata">提交</a>
+										</div>
+									</div>
+								</form>
+							</div>
+						</div>
+						<div class="opvd">
+							<ul>
+								<li onclick="chagespeed(0.5)"><i class="glyphicon glyphicon-facetime-video"></i>X0.5</li>
+								<li onclick="chagespeed(1.0)"><i class="glyphicon glyphicon-facetime-video"></i>X1.0</li>
+								<li onclick="chagespeed(2.0)"><i class="glyphicon glyphicon-facetime-video"></i>X2.0</li>
+								<li onclick="chagespeed(3.0)"><i class="glyphicon glyphicon-facetime-video"></i>X3.0</li>
+								<li onclick="chagespeed(4.0)"><i class="glyphicon glyphicon-facetime-video"></i>X4.0</li>
+								<li onclick="add_wdf()"><i class="glyphicon glyphicon-camera"></i>看点</li>
+								<!-- {%if not video.perview%}
+								<li><a style="color: gray; text-decoration: none;" href="{{url_for('auth.create_perview_img',id=video.id)}}"><i class="glyphicon glyphicon-camera"></i>预览</a></li>
+								{%endif%} -->
+								<li onclick="change_time('-10')"><i class="glyphicon glyphicon-backward"></i></li>
+								<li onclick="change_time('10')"><i class="glyphicon glyphicon-forward"></i></li>
+							</ul>
+						</div>
+					</div>
+					
+				</div>
+			</div>
+			<div id={{video.id}} class="row">
+			</div>
+			<div class="row video_message" style="margin: 10px 0; background-color: white; padding: 15px;">
+				<div class="more">
+					<a title="展开/关闭信息" href="javascript:;">
+						<span></span>
+						<span></span>
+						<span></span>
+					</a>
+				</div>
+				<div class="col-md-12">
+					<div class="divlabel beisu">
+						<label class="h4">
+							
+							女忧：
+						</label>
+						{% for a in video.readActors()%}
+						<a href="{{url_for('auth.list_video',actor=a.id)}}" title="{{a.name}}">
+
+							<img class="avimg" src="{%if a.imgurl%} {{a.imgurl}}{%else%}../static/img/a8.jpg{%endif%}">
+							
+						</a>
+						{% endfor %}
+					</div>
+					<div id="hidendiv" class="divlabel">
+						<div class="divlabel">
+							<label class="h4">
+								番号：
+							</label>
+							<!-- {{video.name}} -->
+							{{video.namehtml | safe}}
+						</div>
+						<div class="divlabel">
+							<label class="h4">
+									时长：
+							</label>
+							{{video_file.durtime}}
+						</div>
+					</div>
+
+					
+					
+					
+				</div>
+				<div class="col-md-12">
+					<div class="divlabel">
+						<label class="h4">
+							番号：
+						</label>
+						{{video.namehtml | safe}}
+					</div>
+
+				</div>
+				{%if video.date%}
+				<div class="col-md-12">
+					<div class="divlabel">
+						<label class="h4">
+							日期：
+						</label>
+						{{video.date}}
+					</div>
+				</div>
+				{%endif%}
+				{%if video_file.durtime and video_file.durtime != 'N/A'%}
+				<div class="col-md-12">
+					<div class="divlabel">
+						<label class="h4">
+							时长：
+						</label>
+						{{video_file.durtime}}
+					</div>
+				</div>
+				{%endif%}
+				{%if video.director.name and video.director.name != 'N/A'%}
+				<div class="col-md-12">
+					<div class="divlabel">
+						<label class="h4">
+							导演：
+						</label>
+						
+						<a href="#">
+							
+							{{video.director.name}}
+						</a>
+						
+					</div>
+				</div>
+				{%endif%}
+				{%if video.producer.name and video.producer.name != 'N/A'%}
+				<div class="col-md-12">
+					<div class="divlabel">
+						<label class="h4">
+							片商：
+						</label>
+						
+						<a href="#">
+							
+							{{video.producer.name}}
+						</a>
+						
+					</div>
+				</div>
+				{%endif%}
+				{%if video.series.name and video.series.name != 'N/A'%}
+				<div class="col-md-12">
+					<div class="divlabel">
+						<label class="h4">
+							系列：
+						</label>
+						
+						<a href="#">
+							
+							{{video.series.name}}
+						</a>
+					</div>
+				</div>
+				{%endif%}
+				<div class="col-md-12">
+					<div class="divlabel">
+						<label class="h4">
+							标签：
+						</label>
+						{% for t in video.readTags() %}
+						<a href="{{url_for('auth.list_video',tag=t.id)}}"><span class="label label-primary">{{t.name}}</span></a>
+						{% endfor %}
+					</div>
+				
+				</div>
+				<div class="col-md-12">
+					<div class="divlabel">
+						<label class="h4">
+							评分：
+						</label>
+						{% for s in range(5) %}
+							{% if s <= video.stats %}
+								<i class="glyphicon glyphicon-star" style="color:peru;" onclick="change_stats(this,'{{video.id}}',{{s}})"></i>
+							{% else %}
+								<i class="glyphicon glyphicon-star-empty" onclick="change_stats(this,'{{video.id}}','{{s}}')"></i>
+							{% endif %}
+						{% endfor %}
+					</div>
+				</div>
+
+				<div class="col-md-12">
+					
+					<div class="divlabel" style="word-break:break-word;">
+						<label class="h4">
+							物理路径：
+						</label>
+						{%if video.videopath%}
+							{{video.videopath}}
+						{%else%}
+							<span style="color: red;">文件离线，请插入硬盘别名为：{{video.diskalise}}</span>
+						{%endif%}
+					</div>
+					
+					
+					<div class="divlabel">
+						<label class="h4">
+							文件大小：
+						</label>
+						{{video_file.videosize}}
+					</div>
+				</div>
+				{%if  video_files | length > 1%}
+				<div class="col-md-12">
+					<label class="h4">
+						剧集：
+					</label>
+					{%for vl in video_files %}
+					<a href="{{url_for('main.show',id=vl.fileid)}}" class="bofg">{{vl.name}}</a>
+					{%endfor%}
+				</div>
+				{%endif%}
+
+
+			</div>
+			<div class="wdf_img">
+			<h4 class="h4_header"> 视频看点 </h4>
+			<div class="row" style="display:block;">
+				
+					
+				<ul class="picList">
+				{%if video.video_times%}
+				{% for vt in video.video_times%}
+					<li id="id_{{vt.id}}">
+						<div class="imgwai"><img onclick="changevtime('{{vt.time}}')" src="{{vt.imgurl}}"></div>
+						<div class="pictime">{{vt.changetime()}}</div>
+						<div class="de_wd"><i onclick="del_wd('{{vt.id}}')" class="glyphicon glyphicon-trash"></i></div>
+					</li>
+								
+								
+				{% endfor %}
+				{%else%}
+				<p style="text-align: center; font-weight:900; color: gray;">没有视频看点</p>
+				{%endif%}
+				</ul>
+				
+			</div>
+
+			</div>
+			<img id='tx'>
+		</div>
+		
+		<script src="../static/js/video.js"></script>
+		<script src='../static/js/videojs.thumbnails.js'></script>
+		<script type="text/javascript">
+		//{%if jdata%}
+		var jdata = '{{jdata|safe}}';
+    		var jsondata = JSON.parse(jdata)
+    		var video = videojs('mvideo',{}, function(){
+				this.thumbnails({'jsondata':jsondata});
+			})
+		//{%endif%}
+		</script>
+		<script>
+
+				$(document).ready(function(){
+
+					document.onkeydown = function(event){
+						var e = event || window.event || arguments.callee.caller.arguments[0];
+
+						if (e && e.keyCode == 39){
+							var mvideo=videojs("mvideo");
+							localtime = mvideo.currentTime()
+							mvideo.currentTime(localtime+10)
+						}
+						if (e && e.keyCode == 37){
+							var mvideo=videojs("mvideo");
+							localtime = mvideo.currentTime()
+							mvideo.currentTime(localtime-10)
+						}
+						if (e && e.keyCode == 32){
+							add_wdf();
+							return false
+						}
+						if (e && e.keyCode == 13){
+							var mvideo=$("#mvideo_html5_api").get(0);
+							if (mvideo.paused){ 
+								mvideo.play()
+							}
+							else{
+								mvideo.pause();
+							}
+								
+
+						}
+					};
+
+					$('.more').click(function(){
+						$('.video_message').toggleClass('tabelopen');
+						$('#hidendiv').toggleClass('hidentabel')
+					});
+					// ------------------------提交片段数据----------------
+
+
+				});
+
+				function change_time(ti){
+					var num = parseInt(ti)
+					var mvideo=videojs("mvideo");
+					localtime = mvideo.currentTime();
+					mvideo.currentTime(localtime+num);
+				}
+
+
+				function del_wd(wd_id){
+					var data = {'id':wd_id};
+					$.get('{{ url_for("main.del_wdf") }}', data, function(data){
+						$('#id_'+wd_id).remove();
+					});
+				}
+
+				function add_wdf(){
+						hq_localtime()
+						var crowd_value = $('#imgurl').val();
+						var crowd_time = $('#tvalue').val();
+						var crowd_id = $('#videoid').val();
+						if (crowd_value == null || crowd_value == ''||
+								crowd_value == 'unundefined'){
+								alert('请上传图片')
+								return false
+						}
+						if (crowd_time == null || crowd_time == ''||
+								crowd_time == 'unundefined'){
+								alert('请选择时间')
+								return false
+						}
+
+						if (crowd_id == null || crowd_id == ''||
+								crowd_id == 'unundefined'){
+								alert('请选择时间')
+								return false
+						}
+
+						var formData = new FormData();
+						formData.append("imgurl", crowd_value);
+						formData.append('wdtime', crowd_time);
+						formData.append('id', crowd_id)
+						
+
+						$.ajax({
+							url : '/wdf_add',
+							dataType : 'json',
+							type : 'POST',
+							data : formData,
+							processData : false,
+							contentType : false,
+							success : function(data){
+								// $('.picList').prepend('<li><div class="imgli"><a href="javascript:;" onclick="changevtime('+data.wdtime+')"><img src="'+data.imgurl+'"></a><p class="p1">时间：'+data.showtime+'</p></div></li>')
+								var lihtml = '<li id="id_'+ data.id +'">';
+								lihtml += '<div class="imgli">';
+								lihtml += '<img onclick="changevtime('+ data.wdtime +')" src="'+data.imgurl+'">';
+								lihtml += '<div class="pictime">'+ data.showtime +'</div>'
+								lihtml += '<div class="de_wd">'
+								lihtml += '<i class="glyphicon glyphicon-trash" onclick="del_wd('+ data.id +')"><i>'
+								lihtml += '</div></div></li>'
+								$('.picList').prepend(lihtml)
+
+							},
+							error : function(response){
+								alert('ss');
+							}
+						});
+					}
+
+
+
+
+
+				function changevtime(cgtime){
+					var mvideo=videojs("mvideo");
+					mvideo.currentTime(cgtime);
+					mvideo.play();
+				}
+				function hq_localtime(){
+					var mvideo=videojs("mvideo");
+					var vd = $("#mvideo_html5_api").get(0);
+					var scale = 0.35
+					var canvas = document.createElement("canvas");
+					canvas.width = vd.videoWidth * scale;
+					canvas.height = vd.videoHeight * scale;
+					canvas.getContext('2d').drawImage(vd,0,0, canvas.width,canvas.height);
+					var dataurl = canvas.toDataURL('image/jpg', 0.5)
+					$('#uimg').html('<img class="wd_img" src="'+dataurl+'">');
+					$('#imgurl').val(dataurl)
+					$('#tvalue').val(mvideo.currentTime());
+					$('#st').html(mvideo.currentTime())
+					
+				}
+
+				// function add_wdf(){
+				// 	$('.bgright').toggle(500)
+				// }
+				function hide_wdf(){
+					$('.bgright').hide(500)
+				}
+				function change_stats(tag,id,index){
+					var data ={
+						'id': id,
+						'stats': index
+					}
+					$.get("{{url_for('auth.cgstats')}}", data, function(data){
+						var pre = $(tag).parent();
+						pre.find('i').each(function(i,val){
+							if(i<=index){
+								$(val).attr('style','color:peru;');
+								$(val).attr('class','glyphicon glyphicon-star')
+							}
+							else{
+								$(val).attr('style','');
+								$(val).attr('class','glyphicon glyphicon-star-empty')
+							}
+						});
+					});
+				}
+				
+				
+
+
+		</script>
+		<script>
+
+			function chagespeed(speed){
+				var vd = $("#mvideo_html5_api").get(0);
+				vd.playbackRate = speed;
+			}
+		</script>
+{% endblock %}

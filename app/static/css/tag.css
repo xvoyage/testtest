@@ -1,0 +1,24 @@
+.ta{
+    padding: 8px;
+    display:inline-block;
+    margin: 4px;
+    background: #f0f3f4;
+    color: inherit;
+}
+.alb{
+    line-height: 42px;
+    height: 42px;
+    font-size: 20px;
+    font-weight: 600;
+}
+.ta i{
+    margin-left: 3px;
+}
+
+.ta a{
+    color: inherit;
+}
+
+.badge-info{
+    background-color: #2ac1b3;
+}

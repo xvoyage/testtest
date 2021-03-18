@@ -1,0 +1,41 @@
+{%extends "auth/base.html"%}
+
+{% block head_script %}
+{{super()}}
+<script src="//cdn.ckeditor.com/4.9.2/standard/ckeditor.js"></script>
+{%endblock%}
+{%block page_content%}
+<div class="mainpand">
+        <div class="">
+            <ol class="breadcrumb">
+                <li><a href="#">首页</a></li>
+                <li><a href="{{url_for('auth.list_actor')}}">演员列表</a></li>
+                <li class="active">新增</li>
+            </ol>
+        </div>
+        <div class="maincontrol">
+                <form class="form-horizontal" method="POST">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">名称</label>
+                        <div class="col-sm-3">
+                                {{ form.txtTitle(**{'class':'form-control'})}}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">排序</label>
+                        <div class="col-sm-3">
+                                {{ form.txtSortId(**{'class':'form-control','value':'99'})}}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-4 col-sm-offset-2">
+                                <!-- <button type="submit" class="btn btn-default">保存提交</button> -->
+                                {{ form.btnSubmit(**{'class':'btn btn-default'})}}
+                                <button type="button" class="btn btn-default" onclick="javascript:history.back(-1);">返回上一步</button>
+                        </div>
+                    </div>
+                    {{ form.hidden_tag() }}
+        </form>
+   
+</div>
+{%endblock%}

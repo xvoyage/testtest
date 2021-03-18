@@ -1,0 +1,59 @@
+.mainpand{
+    border: 1px solid #f5f5f5;
+    border-radius: 4px;
+}
+
+.maincontrol{
+    margin-top:25px;
+    padding: 5px;
+}
+
+.opa{
+    /* border: 1px solid #ccc; */
+    color:black;
+    font-size: 12px;
+    vertical-align: middle;
+    padding: 5px 10px;
+}
+
+/* .opa a:hover{
+    color: #337ab7;
+} */
+a {
+    color: black;
+}
+
+/* a:hover{
+    color: #337ab7;
+} */
+.opa i{
+    margin-right: 3px;
+}
+
+.inputSearch{
+    margin-right: 20px;
+}
+
+.inputSearch input{
+    padding-right: 25px;
+}
+.icosearch{
+    margin-left: -22px;
+}
+
+label{
+    font-weight: 400
+}
+
+.headtou{
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.startl{
+    margin: 0px 20px;
+}
+
+.startl::before{
+    content:'' !important;
+}

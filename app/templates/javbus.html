@@ -1,0 +1,40 @@
+{% extends "auth/newbase.html" %}
+{% import "auth/_macros.html" as macros %}
+{% block head_script %}
+{{ super() }}
+<link rel='stylesheet' type='text/css' href="{{url_for('static', filename='css/movie.css')}}">
+<!-- <script src="{{url_for('static', filename='js/jquery.masonry.min.js')}}"></script> -->
+<link rel="stylesheet" href="{{url_for('static', filename='css/viewer.min.css')}}">
+<script type="text/javascript" src="{{url_for('static', filename='js/viewer.min.js')}}"></script>
+{% endblock %}
+
+
+{% block page_content %}
+{{javbusmg['script']|safe}}
+<div style="width: 1170px; padding-right: 15px;padding-left: 15px;margin-right: auto;margin-left: auto;">
+    {{javbusmg['title']|safe}}
+    {{javbusmg['main']|safe}}
+    <h4 id="mag-submit-show" style="cursor: pointer;">磁力連結投稿 <span id="mag-submit-toggle" class="glyphicon glyphicon-plus"></span></h4>
+    <div class="movie" style="padding:12px; margin-top:15px"> 
+        <table class="table table-condensed table-striped table-hover" id="magnet-table" style="margin-bottom:0;">
+            <tr style="font-weight:bold;">
+            <td>磁力名稱 <span class="glyphicon glyphicon-magnet"></span></td>
+            <td style="text-align:center;white-space:nowrap">檔案大小</td>
+            <td style="text-align:center;white-space:nowrap">分享日期</td>
+            </tr>
+            {{javbusmg['magnet']|safe}}
+        </table>
+    </div>
+    <h4>樣品圖像</h4>
+    {{javbusmg['imgs']|safe}}
+    
+</div>
+
+<script>
+    var viewer = new Viewer(document.getElementById('sample-waterfall'), {
+      url: 'data-original'
+    });
+</script>
+
+{% endblock %}
+

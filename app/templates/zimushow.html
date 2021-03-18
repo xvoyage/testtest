@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>{{video.title}}</title>
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+		<link rel="stylesheet" href="{{url_for('static', filename='css/myvideo.css')}}">
+		<link rel="stylesheet" href="{{url_for('static', filename='css/uf.css')}}">
+		<link href="//cdn.bootcss.com/video.js/7.0.0-alpha.1/alt/video-js-cdn.css" rel="stylesheet">
+		<link href="../static/css/videojs.thumbnails.css" rel="stylesheet">
+		<link rel="stylesheet" href="{{url_for('static', filename='css/spop.css')}}">
+<script src="{{url_for('static', filename='js/spop.js')}}"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/socket.io/1.5.1/socket.io.min.js"></script>
+		<script type="text/javascript">
+			if(/Android|webOS|iPhone|iPod|BlackBerry/i.test(navigator.userAgent)) {
+				window.location.href = "{{url_for('main.mbshow',id=video.id)}}";
+			} 
+		</script>
+		<script type="text/javascript">
+			var socket = io.connect('http://192.168.1.127:80/messagequeue');
+			socket.on('server_response', function(reg){
+				var arrmg = reg.data;
+				console.log(arrmg)
+				if(arrmg){
+					for(i=0; i<arrmg.length; i++){
+						var pid = arrmg[i][0];
+						// var jd = parseInt(parseFloat(arrmg[i][1]) * 100);
+						if(parseInt(pid)> 0){
+							var jd = parseInt(parseFloat(arrmg[i][1]) * 100);
+							var jdpre = jd + '%';
+							// $('#'+pid).attr('aria-valuenow',jd);
+							// $('#'+pid).attr('style','width:'+jdpre);
+							// $('#'+pid).text(jdpre);
+							
+							var prid = 'p'+pid;
+							var obp = document.getElementById(prid)
+							if(obp == null){
+								var html = '<div class="progress" style=" margin: 0; width: 100%; height: 50px;"><div id ="';
+								html += prid;
+								html +='"class="progress-bar progress-bar-success progress-bar-striped" role="progressbar"  aria-valuemin="0" aria-valuemax="100" ></div>';
+								$('#'+pid).attr('class','row imgprocess')
+								$('#'+pid).append(html);
+							}
+							$('#'+prid).attr('aria-valuenow',jd);
+							$('#'+prid).attr('style','width:'+jdpre);
+							$('#'+prid).text(jdpre);
+							// $('#'+pid);
+							console.log(jd)
+							if(jd >= 100){
+								// $('#'+pid).children('.jdt').remove()
+								$('.progress').remove()
+								$('#'+pid).attr('class','row')
+							}
+						}
+						else{
+							spop({
+								template: arrmg[i][1],
+								autoclose: 5000
+							});
+						}
+					}
+				}
+			});
+		</script>
+		
+	</head>
+	<body>
+		<nav class="navbar navbar-default">
+			<div class="container-fluid">
+				<div class="navbar-header">
+					<a class="navbar-brand" href="#">Video</a>
+				</div>
+				<div class="collapse navbar-collapse">
+					<ul class="nav navbar-nav">
+						<li class="active">
+							<a href="#">内容</a>
+						</li>
+						<li>
+							<a href="#">控制面板</a>
+						</li>
+					</ul>
+					<ul class="nav navbar-nav navbar-right">
+
+							<li class="dropdown">
+								<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+										administrator <span class="caret"></span>
+								</a>
+								<ul class="dropdown-menu">
+									<li><a href="#">修改密码</a></li>
+									<li><a href="{{url_for('auth.logout')}}">注销登录</a></li>
+								</ul>
+							</li>
+						</ul>
+				</div>
+			</div>
+		</nav>
+		<div class="container">
+			<div class="row">
+				<div class="col-md-12">
+					<h2>
+						{{video.title}}
+					</h2>
+				</div>
+			</div>
+			<div class="row">
+				<div id="vidmain" class="col-md-12 style="margin: 20px 0 ">
+					<div class="vdmainbd" >
+						<div class="videobg">
+							{%if zimulist %}
+							<img id='prewid' src="{{video.perview}}">
+							{%else%}
+							<img id='prewid' src="{{video.img}}">
+							{%endif%}
+						</div>
+
+						<!-- <div class="bgleft" style="background-image: url('{{video.img}}')">
+						</div> -->
+
+						<div class="opvd">
+							<ul>
+								<li><a href="{{url_for('main.create_zm_file',id=video.id)}}">字幕完成</a></li>
+								<li onclick="set_skiptime()">跳过片头</li>
+								<li><a href="{{url_for('main.create_zm_file',id=video.id)}}">创建文件</a></li>
+								<li onclick="set_start_time()">开始时间</li>
+								<li onclick="set_end_time()">结束时间</li>
+								<li onclick="add_zimu()">添加字幕</li>
+								<li onclick="get_pre()"><i class="glyphicon glyphicon-backward"></i></li>
+								<li onclick="get_next()"><i class="glyphicon glyphicon-forward"></i></li>
+							</ul>
+						</div>
+					</div>
+					
+				</div>
+			</div>
+			<div id={{video.id}} class="row">
+			</div>
+			<div class="row" style="margin: 10px 0; background-color: white; padding: 15px;">
+
+				<div class="col-md-12">
+					<div class="divlabel beisu">
+						<label class="h4">
+							
+							开始时间：
+						</label>
+						<span id="stime">
+							02:01:01
+						</span>
+					</div>
+					<div class="divlabel beisu">
+						<label class="h4">
+							
+							结束时间：
+						</label>
+						<span id="etime">
+							02:01:01
+						</span>
+					</div>
+					<div class="divlabel beisu">
+						<label class="h4">
+							
+							当前时间：
+						</label>
+						<span id="loctime">
+							{{video.timeformat(video.local)}}
+						</span>
+					</div>
+					<div class="divlabel beisu">
+						<label class="h4">
+							
+							片头时间：
+						</label>
+						<span id="skiptime">
+							{{video.timeformat(video.skip)}}
+						</span>
+					</div>
+					
+					
+				</div>
+				<div class="col-md-12">
+					<div class="">
+						<label class="h4">
+							
+							字幕：
+						</label>
+						<textarea id='ta_zimu' class="form-control"></textarea>
+					</div>
+				</div>
+			</div>
+			<div class="row" style="margin: 10px 0; background-color: white; padding: 15px;">
+				<table class="table">
+					<thead>
+						<tr>
+							<th>开始时间</th>
+							<th>结束时间</th>
+							<th>字幕</th>
+							<th>操作</th>
+						</tr>
+					</thead>
+					<tbody id='mgl'>
+					{%for zv in  zimulist%}
+					<tr id='{{zv.id}}'>
+						<td>{{video.timeformat(zv.starttime)}}</td>
+						<td>{{video.timeformat(zv.endtime)}}</td>
+						<td>{{zv.zmvalue}}</td>
+						<td onclick="del_zmvalue('{{zv.id}}')">删除</td>
+					</tr>
+					</tbody>
+					{%endfor%}
+				</table>
+			</div>
+
+			<img id='tx'>
+		</div>
+		
+		<script src="../static/js/video.js"></script>
+		<script src='../static/js/videojs.thumbnails.js'></script>
+
+		<script type="text/javascript">
+			var localtime = '{{video.local}}';
+			var pretime_format = null;
+			var nexttime_format = null;
+			var pretime = '{{video.pre}}';
+			var nexttime = '{{video.next}}';
+			var zimu_id = '{{video.id}}';
+			var xuhao = '{{video.local}}';
+			var starttime = null;
+			var endtime = null;
+			function getpervew(id){
+				var data = {
+					'id': zimu_id,
+					'page': id
+				}
+				$.get('{{url_for("main.imgpage")}}', data, function(data){
+					if(data.st){
+						localtime = data.localtime;
+						xuhao = data.local
+						pretime = data.pre;
+						nexttime = data.next;
+						$('#prewid').attr('src',data.img);
+						$('#loctime').text(data.localtime);
+
+					}
+				});
+			}
+
+			function get_pre(){
+				getpervew(pretime);
+			}
+			function get_next(){
+				getpervew(nexttime);
+			}
+
+			function set_start_time(){
+				pretime_format = localtime;
+				starttime = xuhao;
+				$('#stime').text(pretime_format);
+			}
+
+			function set_end_time(){
+				nexttime_format = localtime;
+				endtime = xuhao;
+				$('#etime').text(nexttime_format)
+			}
+			function set_skiptime(){
+				var skip = xuhao;
+				data = {
+					'id': zimu_id,
+					'skiptime': skip
+				}
+
+				$.get('{{url_for("main.set_skiptime")}}', data, function(data){
+					if(data.skiptime){
+						$('#skiptime').text(data.skiptime)
+					}
+				});
+			}
+
+			function del_zmvalue(id){
+				data = {
+					'id': id
+				}
+				$.get('{{url_for("main.del_zmvalue")}}', data, function(data){
+					if(data.id){
+						$('#'+ data.id).remove()
+					}
+				})
+			}
+
+			function add_zimu(){
+				var zimu_value = $('#ta_zimu').val();
+				if (zimu_value == undefined || zimu_value =='' || zimu_value == null){
+					spop({
+								template: '内容不能为空',
+								autoclose: 5000
+						});
+					return false
+				}
+				data = {
+					'pid': zimu_id,
+					'start_time': starttime,
+					'end_time': endtime,
+					'sort': xuhao,
+					'msg': zimu_value
+				}
+
+				$.get('{{url_for("main.zivalue_add")}}', data, function(data){
+					if (!data.st){
+						spop({
+							template: '添加失败',
+							autoclose: 5000
+						})
+					}
+					else{
+						$('#ta_zimu').val('');
+						var htmltext = '<tr>';
+						htmltext += '<td>'+ data.starttime+'</td>';
+						htmltext += '<td>'+ data.endtime+'</td>';
+						htmltext += '<td>'+ data.msg+'</td>';
+						htmltext += '<td onclick="del_zmvalue('+data.pid+')">删除</td>';
+						$('#mgl').prepend(htmltext)
+					}
+				});
+				
+			}
+
+			$(document).ready(function(){
+
+				document.onkeydown = function(event){
+					var e = event || window.event || arguments.callee.caller.arguments[0];
+
+					if (e && e.keyCode == 39){
+						get_next()
+						return false
+					}
+					if (e && e.keyCode == 37){
+						get_pre()
+						return false
+					}
+					if (e && e.keyCode == 38){
+						set_start_time()
+						return false
+					}
+					if (e && e.keyCode == 40){
+						set_end_time()
+						return false
+					}
+
+					if (e && e.keyCode == 33){
+						getpervew(pretime - 30)
+						return false
+					}
+					if (e && e.keyCode == 34){
+						getpervew(nexttime + 30)
+						return false
+					}
+					if (e && e.ctrlKey && e.keyCode == 13){
+						add_zimu()
+						return false
+					}
+					// if (e && e.keyCode == 13){
+					// 	add_zimu()
+					// }
+				};
+			})
+
+
+		</script>
+
+
+	</body>
+</html>

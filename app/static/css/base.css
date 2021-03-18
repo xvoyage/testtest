@@ -1,0 +1,122 @@
+.navigationToggle{
+    padding: 9px 10px;
+}
+.search_div{
+    padding-top: 10px;
+    margin-left: 5px;
+}
+
+.search_div input{
+    padding: 5px;
+    border: 0px solid transparent;
+    width: 300px;
+}
+
+.search_div input:focus{
+    outline: 0px solid transparent;
+    border-color: #23b7e5 !important;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+}
+.add-brand{
+    float: left;
+    height: 50px;
+    padding: 15px 15px;
+    font-size: 16px;
+    line-height: 20px;
+    color: #777 !important;
+
+}
+
+.add-brand i{
+    vertical-align: 1px;
+    margin-right: 2px;
+    font-size: 12px;
+    border:0px solid transparent;
+}
+.add-brand:hover{
+    background-color: #337ab7 !important;
+    color: white !important;
+    border:0px solid transparent;
+    text-decoration: none !important;
+}
+
+.i-brand{
+    font-size: 16px;
+    cursor: pointer;
+}
+.i-brand:hover{
+    background-color: #337ab7;
+    border:0px solid transparent;
+}
+.i-brand:hover i{
+    color: white;
+}
+
+.navbar-default {
+    background-color: white;
+}
+
+.add-menu{
+    margin: 0;
+    position: absolute;
+    width: 100%;
+    top: 0px;
+    margin-top: 50px;
+    transform: scale(0);
+    z-index: 999;
+    transition: all 0.3s;
+    transform-origin: 50% 0;
+}
+
+.add-menu ul{
+    list-style: none;
+    padding: 0 5px 5px;
+    margin: 0;
+    background: white;
+    border-radius: 4px;
+    border: 1px solid #eee;
+}
+
+.add-menu ul li{
+    padding: 5px 0;
+    text-align: center;
+    border-bottom: 1px dashed #eee;
+}
+.add-menu div{
+    width: 0;
+    border-width: 10px;
+    border-style: solid;
+    border-color: transparent transparent white transparent;
+    margin: auto;
+    margin-bottom: -1px;
+    z-index: 99999;
+    position: relative;
+    margin-top: -8px;
+
+}
+.listmenu:hover .add-menu{
+    /* padding: 0 5px 5px;
+    border: 1px solid #eee;
+    background: white;
+    border-radius: 4px;
+    height: 70px; */
+    transform: scale(1);
+}
+.add-menu li a{
+    color: #777;
+    
+}
+.box{
+    background-color: white;
+    padding: 15px 15px;
+    border-radius: 4px;
+    border: 1px solid #eee;
+    box-shadow: 0 1px 1px rgb(0 0 0 / 5%);
+    font-size: 12px;
+}
+body{
+    background: #f5f6f7;
+    /* font-family: Microsoft YaHei ; */
+    color: #888888;
+}

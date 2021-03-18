@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		{%block head%}
+		<title>{%block title%}后台管理中心{%endblock%}</title>
+		{%block head_css%}
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        
+		<link rel="stylesheet" href="{{url_for('static', filename='css/spop.css')}}">
+		
+		<!-- <link href="../../static/css/bootstrap.min.css?v=3.3.6" rel="stylesheet"> -->
+    	<link href="../../static/css/font-awesome.min.css?v=4.4.0" rel="stylesheet">
+    	<link href="../../static/css/animate.css" rel="stylesheet">
+    	<link href="../../static/css/style_new.css?v=4.1.0" rel="stylesheet">
+
+		{%endblock%}
+		{%block head_script%}
+		<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+		<script src="{{url_for('static', filename='js/spop.js')}}"></script>
+		<script type="text/javascript" src="https://cdn.bootcss.com/socket.io/1.5.1/socket.io.min.js"></script>
+		{%endblock%}
+		{%endblock%}
+		{%block sendio%}
+		<!-- <script type="text/javascript">
+			var socket = io.connect('http://192.168.1.127:80/messagequeue');
+			socket.on('server_response', function(reg){
+				var arrmg = reg.data;
+				if(arrmg){
+					for(i=0; i<arrmg.length; i++){
+						if (arrmg[i][0] >= 0){
+							continue
+						}
+						spop({
+							template: arrmg[i][1],
+							autoclose: 5000
+						});
+					}
+				}
+			});
+		</script> -->
+		{%endblock%}
+		<script type="text/javascript">
+			$(document).ready(function(){
+			$('#snd').click(function(){
+				var fanhao = $('#fh').val()
+				var formData = new FormData();
+				var ntag = $('#fh')
+				
+				formData.append('fh', fanhao);
+				$.ajax({
+					url : '/check',
+            		dataType : 'json',
+            		type : 'POST',
+            		data : formData,
+             		processData : false,
+            		contentType : false,
+					success : function(data){
+						if(data.id == '-1'){
+                            ntag.parent().attr('class','form-group has-success has-feedback');
+                            ntag.next().remove();
+                            ntag.parent().append('<span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true"></span>');
+                        }
+                        else{
+                            ntag.parent().attr('class','form-group has-error has-feedback');
+                            ntag.next().remove();
+                            ntag.parent().append('<span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>');
+                        }
+					},
+					error : function(data){
+						alert('sss')
+					}
+				});
+			})
+
+			//{% for message in get_flashed_messages(category_filter=['success']) %}
+			spop({
+					template: '{{message}}',
+					// group: 'submit-satus',
+					style: 'success',
+					autoclose: 5000
+				});
+			////{%endfor%}
+
+			//{% for message in get_flashed_messages(category_filter=['err']) %}
+			spop({
+					template: '{{message}}',
+					// group: 'submit-satus',
+					style: 'error',
+					autoclose: 5000
+				});
+			////{%endfor%}
+
+			//{% for message in get_flashed_messages(category_filter=['info']) %}
+			spop({
+					template: '{{message}}',
+					// group: 'submit-satus',
+					// style: 'error',
+					autoclose: 5000
+				});
+			////{%endfor%}
+
+
+			// namespace 
+			// var socket = io.connect('http://192.168.1.127:80/messagequeue');
+			// socket.on('server_response', function(reg){
+			// 	var arrmg = reg.data;
+			// 	if(arrmg){
+			// 		for(i=0; i<arrmg.length; i++){
+			// 		spop({
+			// 			template: arrmg[i][1],
+			// 			autoclose: 5000
+			// 		});
+			// 		}
+			// 	}
+			// });
+		})
+
+		// function get_message(){
+		// 	$.get("{{url_for('auth.readmg')}}", function(data){
+		// 		// alert(data.data instanceof Array);
+		// 		var arrmg = data.data;
+		// 		if(arrmg){
+		// 			for(i=0; i<arrmg.length; i++){
+		// 			spop({
+		// 				template: arrmg[i],
+		// 				autoclose: 5000
+		// 			});
+		// 			}
+		// 		}
+		// 	})
+		// }
+
+   		// setInterval(get_message, 5000)
+		
+
+		
+
+		</script>
+	</head>
+	<body class="fixed-sidebar full-height-layout gray-bg" style="overflow:hidden">
+		<div id="wrapper">
+			<!--右侧部分开始-->
+			<div id="page-wrapper" class="gray-bg dashbard-1">
+				<div class="row border-bottom">
+					<nav class="navbar navbar-static-top" role="navigation" style="margin-bottom: 0">
+						<div class="navbar-header"><a class="navbar-minimalize minimalize-styl-2 btn btn-info " href="#"><i class="fa fa-bars"></i> </a>
+							<form role="search" class="navbar-form-custom" method="post" action="search_results.html">
+								<div class="form-group">
+									<input type="text" placeholder="请输入您需要查找的内容 …" class="form-control" name="top-search" id="top-search">
+								</div>
+							</form>
+						</div>
+						<ul class="nav navbar-top-links navbar-right">
+							<li class="dropdown">
+								<a class="dropdown-toggle count-info" data-toggle="dropdown" href="#">
+									<i class="fa fa-envelope"></i> <span class="label label-warning">16</span>
+								</a>
+							</li>
+							<li class="dropdown">
+								<a class="dropdown-toggle count-info" data-toggle="dropdown" href="#">
+									<i class="fa fa-bell"></i> <span class="label label-primary">8</span>
+								</a>
+							</li>
+						</ul>
+					</nav>
+				</div>
+				<div class="row J_mainContent" id="content-main" >
+					{% block page_content %}
+					{% endblock %}
+				</div>
+			</div>
+			<!--右侧部分结束-->
+		</div>
+	{% block footer_script %}
+		<!-- 全局js -->
+		<script src="../../static/js/jquery.min.js?v=2.1.4"></script>
+		<script src="../../static/js/bootstrap.min.js?v=3.3.6"></script>
+		<script src="../../static/js/plugins/metisMenu/jquery.metisMenu.js"></script>
+		<script src="../../static/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+		<script src="../../static/js/plugins/layer/layer.min.js"></script>
+	
+		<!-- 自定义js -->
+		<script src="../../static/js/hAdmin.js?v=4.1.0"></script>
+		<script type="text/javascript" src="../../static/js/index.js"></script>
+	
+		<!-- 第三方插件 -->
+		<script src="../../static/js/plugins/pace/pace.min.js"></script>
+	{% endblock%}
+	</body>
+</html>
