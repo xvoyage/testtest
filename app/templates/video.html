@@ -20,50 +20,8 @@
 {% endblock %}
 {%block sendio%}
 <script type="text/javascript">
-	var socket = io.connect('http://192.168.1.127:80/messagequeue');
-	socket.on('server_response', function(reg){
-				var arrmg = reg.data;
-				console.log(arrmg)
-				if(arrmg){
-					for(i=0; i<arrmg.length; i++){
-						var pid = arrmg[i][0];
-						// var jd = parseInt(parseFloat(arrmg[i][1]) * 100);
-						if(parseInt(pid)> 0){
-							var jd = parseInt(parseFloat(arrmg[i][1]) * 100);
-							var jdpre = jd + '%';
-							// $('#'+pid).attr('aria-valuenow',jd);
-							// $('#'+pid).attr('style','width:'+jdpre);
-							// $('#'+pid).text(jdpre);
-							
-							var prid = 'p'+pid;
-							var obp = document.getElementById(prid)
-							if(obp == null){
-								var html = '<div class="progress" style=" margin: 0; width: 100%; height: 50px;"><div id ="';
-								html += prid;
-								html +='"class="progress-bar progress-bar-success progress-bar-striped" role="progressbar"  aria-valuemin="0" aria-valuemax="100" ></div>';
-								$('#'+pid).attr('class','row imgprocess')
-								$('#'+pid).append(html);
-							}
-							$('#'+prid).attr('aria-valuenow',jd);
-							$('#'+prid).attr('style','width:'+jdpre);
-							$('#'+prid).text(jdpre);
-							// $('#'+pid);
-							console.log(jd)
-							if(jd >= 100){
-								// $('#'+pid).children('.jdt').remove()
-								$('.progress').remove()
-								$('#'+pid).attr('class','row')
-							}
-						}
-						else{
-							spop({
-								template: arrmg[i][1],
-								autoclose: 5000
-							});
-						}
-					}
-				}
-			});
+
+
 </script>
 {%endblock%}
 		
@@ -93,10 +51,16 @@
 							<img src="{{video.img}}">
 							{%endif%}
 							</video>
+
 						</div>
 
 						<!-- <div class="bgleft" style="background-image: url('{{video.img}}')">
 						</div> -->
+						{% if video_file.currenttime %}
+						<div class="jindu">
+						<p><a href="javascript:;" onclick="set_currenttime('{{video_file.currenttime}}')">跳转至上次位置：<span>{{video_file.currenttime_str}}</span></a><i title="关闭" onclick="javascript:$('.jindu').remove()" class="glyphicon glyphicon-remove"></i></p>
+						</div>
+						{%endif%}
 						<div class="bgright" style="display: none">
 							<div class="add_wd">
 								<form method="POST">
@@ -115,7 +79,7 @@
 											<span><a class="btn btn-default" href="javascript:;" onclick="hq_localtime()">获取时间</a></span>
 											<input id='tvalue' type="hidden">
 											<input id='imgurl' type="hidden" value="{{video.img}}">
-											<input id='videoid' type="hidden" value="{{video.id}}">
+											<input id='videoid' type="hidden" value="{{video_file.id}}">
 										</div>
 										<div style="margin: 10px 0px; padding: 1px;">
 											<a class="btn btn-default" style="width: 200px" id="adddata">提交</a>
@@ -326,8 +290,8 @@
 				
 					
 				<ul class="picList">
-				{%if video.video_times%}
-				{% for vt in video.video_times%}
+				{%if video_file.video_times%}
+				{% for vt in video_file.video_times%}
 					<li id="id_{{vt.id}}">
 						<div class="imgwai"><img onclick="changevtime('{{vt.time}}')" src="{{vt.imgurl}}"></div>
 						<div class="pictime">{{vt.changetime()}}</div>
@@ -359,6 +323,7 @@
 		//{%endif%}
 		</script>
 		<script>
+				var close_time = 5;
 
 				$(document).ready(function(){
 
@@ -397,7 +362,9 @@
 						$('#hidendiv').toggleClass('hidentabel')
 					});
 					// ------------------------提交片段数据----------------
-
+					
+					readtime();
+					setInterval(get_video_currentime, 5000);
 
 				});
 
@@ -497,6 +464,45 @@
 				// function add_wdf(){
 				// 	$('.bgright').toggle(500)
 				// }
+
+				//{%if video_file %}
+				function get_video_currentime(){
+					var mvideo=videojs("mvideo");
+					var currentime = mvideo.currentTime();
+					if (currentime > 5){
+						var data = {
+							'file_id': '{{video_file.id}}',
+							'currentime' : currentime
+						}
+						$.get("{{url_for('main.set_currenttime')}}", data, function(data){
+						});
+					}
+
+				}
+
+				function readtime(){
+					var mvideo=videojs("mvideo");
+					var currentime = mvideo.currentTime();
+
+					if(close_time > 0){
+						// $('.jindu').remove()
+						if(currentime>0){
+							close_time--
+						}
+						setTimeout(readtime,1000)
+					}
+					else{
+						$('.jindu').remove()
+					}
+				}
+
+				function set_currenttime(value){
+					changevtime(value)
+					$('.jindu').remove()
+				}
+				//{%endif%}
+
+
 				function hide_wdf(){
 					$('.bgright').hide(500)
 				}

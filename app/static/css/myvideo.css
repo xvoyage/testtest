@@ -363,3 +363,25 @@ body{
 .tabelopen{
     height: unset !important;
 }
+
+.jindu{
+    position: absolute;
+    bottom: 50px;
+    left: 30px;
+    background-color: #000;
+    color: #FFF;
+    border-radius: 5px;
+}
+
+.jindu p{
+    margin: 0;
+    padding: 5px 10px 5px 10px;
+}
+.jindu a{
+    color: #fff;
+}
+.jindu i{
+    margin-left: 10px;
+    vertical-align: -1px;
+    cursor: pointer;
+}

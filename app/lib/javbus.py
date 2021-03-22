@@ -1,20 +1,138 @@
 import requests
 from bs4 import BeautifulSoup
+from .videomodel import VideoModel
+from lxml import etree
+
+class JavBusMode(VideoModel):
+    root_path = [
+        'https://www.javbus.com',
+        'https://www.javbus.blog',
+        'https://www.fanbus.blog',
+        'https://www.buscdn.me'
+    ]
+    
+
+class JavBusModeController(object):
+
+    def make_request(self,url, headers=None):
+        if headers is None:
+            headers = {
+                'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.79 Safari/537.36'
+            }
+        # url = 'https://www.javbus.com/'
+        try:
+            req = requests.get(url=url, headers=headers)
+            return req
+        except Exception as e:
+            return None
+
+    def get_img_url(self, etreeobj):
+        imgurl = etreeobj.xpath('//a[@class="bigImage"]/img/@src')
+        if imgurl:
+            return imgurl[0]
+        return False
+
+    def get_video_name(self, etreeobj):
+        name = etreeobj.xpath('//div[@class="col-md-3 info"]/p[1]/span[2]/text()')
+        if name:
+            return name[0]
+        return False
+
+    def get_video_title(self, etreeobj):
+        title = etreeobj.xpath('//div[@class="container"]/h3[1]/text()')
+        if title:
+            return title[0]
+        return False
 
 
-def make_request(url, headers=None):
-    if headers is None:
-        headers = {
-            'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.79 Safari/537.36'
-        }
-    # url = 'https://www.javbus.com/'
-    try:
-        req = requests.get(url=url, headers=headers)
-        return req
-    except Exception as e:
-        return None
+    def get_video_date(self,etreeobj):
+        date = etreeobj.xpath('//div[@class="col-md-3 info"]/p[2]/text()')
+        if date:
+            return date[0]
+        return False
+
+    def get_video_tags(self, etreeobj):
+        tags = etreeobj.xpath('//span[@class="genre"]')
+        tagslist = []
+        for tag in tags:
+            # print(tag)
+            name = tag.xpath('./label/a/text()')
+            link = tag.xpath('./label/a/@href')
+            if name and link:
+                tagslist.append((name[0], link[0]))
+        return tagslist
 
 
+    def get_video_actor(self, etreeobj):
+        tags = etreeobj.xpath('//span[@class="genre"]')
+        tagslist = []
+        for tag in tags:
+            # print(tag)
+            name = tag.xpath('./a/text()')
+            link = tag.xpath('./a/@href')
+            if name and link:
+                tagslist.append((name[0], link[0]))
+        return tagslist
+
+    def get_other_message(self, etreeobj):
+        name = etreeobj.xpath('./a/text()')
+        link = etreeobj.xpath('./a/@href')
+        if name and link:
+            return (name[0], link[0])
+        return []
+
+        
+
+    def get_video_message(self,url):
+        md = JavBusMode()
+        req = self.make_request(url)
+        if not req:
+            raise ValueError(u'获取信息失败')
+        tree = etree.HTML(req.text)
+        md.title = self.get_video_title(tree)
+        md.fanhao = self.get_video_name(tree)
+        md.samle_img = self.get_img_url(tree)
+        md.dtime = self.get_video_date(tree)
+        md.tags = self.get_video_tags(tree)
+        md.actors = self.get_video_actor(tree)
+        others = tree.xpath('//div[@class="col-md-3 info"]/p[position()>3]')
+        for other in others:
+            key = other.xpath('./span[@class="header"]/text()')
+            if key:
+                key = key[0]
+            if key == u'導演:':
+                md.daoyan = self.get_other_message(other)
+            if key == u'製作商:':
+                md.pianshang = self.get_other_message(other)
+            if key == u'發行商:':
+                md.faxing = self.get_other_message(other)
+            if key == u'系列:':
+                md.xilie = self.get_other_message(other)
+        return md
+
+
+    def search_video_message(self,keyword):
+        md = JavBusMode()
+        for root  in md.root_path:
+            url = '{}/{}'.format(root,keyword.upper())
+            try:
+                md = self.get_video_message(url)
+                break
+            except Exception as e:
+                print('{}:获取信息失败'.format(url))
+        else:
+            md = False
+        return md
+
+
+
+
+
+    # imgurl = etreeobj.xpath
+
+
+
+'''
 def get_list_mgs(request):
     htmldos={}
     bs = BeautifulSoup(request.text, 'html.parser')
@@ -133,3 +251,4 @@ def get_magnet(url,Referer):
     req = make_request(url, headers=headers)
     return str(req.text)
     
+'''

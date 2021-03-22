@@ -11,12 +11,13 @@ class VideoModel(object):
     _tags = [] #标签
     _actors = [] #演员
     daoyan = None #导演
-    xilie = None
+    xilie = None #系列
 
     @property
     def tags(self):
         return self._tags
-
+    
+    #value必须为元组列表如[('动漫','www.dm.com')]
     @tags.setter
     def tags(self,value):
         if not isinstance(value,list):

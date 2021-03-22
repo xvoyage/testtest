@@ -12,5 +12,5 @@ from .imgtag import ImgTag
 from .disk import Diskdb
 from .settings import Settings
 from .message import MessageList
-from .vdfollow import VdFollow
+# from .vdfollow import VdFollow
 from .other import Director, Producer, Series, Zimu, ZimuValue

@@ -57,7 +57,7 @@ class Movie(db.Model):
     stats = db.Column(db.Integer, default=0)
     movie_file = db.Column(db.String(128))
     description = db.Column(db.Text)
-    video_times = db.relationship('VideoTime', backref='video')
+    
     ares = db.Column(db.Integer, default=0)
     splitfile = db.Column(db.Boolean, default=True)
     pypath = db.Column(db.String(256))
@@ -249,6 +249,8 @@ class VideoFile(db.Model):
     __durtime = db.Column(db.Integer)
     size = db.Column(db.BigInteger)
     video_id = db.Column(db.Integer, db.ForeignKey('movies.id'))
+    currenttime = db.Column(db.BigInteger)
+    video_times = db.relationship('VideoTime', backref='video_file')
 
     @property
     def fileid(self):
@@ -297,6 +299,15 @@ class VideoFile(db.Model):
     @durtime.setter
     def durtime(self,value):
         self.__durtime = value
+
+    @property
+    def currenttime_str(self):
+        if self.currenttime:
+            h = int(self.currenttime / 3600);
+            m = int((self.currenttime % 3600) / 60)
+            s = int((self.currenttime % 60))
+            return '{}:{}:{}'.format(h,m,s)
+        return '00:00:00'
 
 
 

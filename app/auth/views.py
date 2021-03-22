@@ -1,7 +1,7 @@
-from flask import render_template, redirect, request, url_for, flash, current_app, send_from_directory, jsonify, Response, session, get_flashed_messages, g
+from flask import render_template, redirect, request, url_for, flash, current_app, send_from_directory, jsonify, Response, session, get_flashed_messages, g, abort
 from . import auth
 from .forms import LoginForm, MovieForm, CategoryForm, TagForm, ActorForm, DiskForm, SettingForm, ZimuForm
-from ..models import User, Category, Tag, Actor, Movie, Movie2Actor, Movie2Tag, Diskdb, Settings, MessageList, Myphoto, VdFollow, Producer, Director, Series, ZimuValue, Zimu,VideoFile
+from ..models import User, Category, Tag, Actor, Movie, Movie2Actor, Movie2Tag, Diskdb, Settings, MessageList, Myphoto, Producer, Director, Series, ZimuValue, Zimu,VideoFile
 from flask_login import login_user, current_user, login_required, logout_user
 from flask_uploads import UploadSet, IMAGES, All, configure_uploads, patch_request_class
 import os
@@ -20,7 +20,8 @@ from flask_socketio import emit
 from threading import Lock
 from ..lib.diskdrive import Diskdrive
 from ..lib.javlib import make_request, get_video_meg,checkimgurl, javlib_search_video_msg
-from ..lib.javdb import make_javdb_request, get_show_magnet, get_search_video_msg
+from ..lib.javdb import  JavDbModeController
+from ..lib.javbus import JavBusModeController
 from pypinyin import lazy_pinyin
 from collections import OrderedDict
 import json
@@ -75,9 +76,9 @@ def login():
             login_user(user, form.remember_me.data)
             get_flashed_messages() #清空消息
             flash('登录成功','success')
-            vd = VdFollow()
-            app = current_app._get_current_object()
-            vd.async_check_video(app)
+            # vd = VdFollow()
+            # app = current_app._get_current_object()
+            # vd.async_check_video(app)
             return redirect(request.args.get('next') or url_for('auth.list_video', username=current_user.username, stats=4))
     return render_template('auth/login.html', form=form)
 
@@ -1108,11 +1109,16 @@ def getvideomg():
         raise('err')
     # target = url.format(keyword)
     # a = javlib_search_video_msg(keyword)
-    md = get_search_video_msg(keyword)
+    
     try:
-        md = get_search_video_msg(keyword)
-        if md is None:
-            raise 'err'
+        # raise ValueError(u'获取不到信息')
+        source = [JavDbModeController(),JavBusModeController()]
+        for controll in source:
+            md = controll.search_video_message(keyword)
+            if md:
+                break
+        else:
+            raise ValueError(u'获取不到信息')
         v_dist = {
                 'title': md.title,
                 'no': md.fanhao,
@@ -1128,8 +1134,8 @@ def getvideomg():
 
         return jsonify(v_dist)
     except Exception as e:
-        v_dist = {'mg': '抓起异常'}
-        print(v_dist)
+        v_dist = {"readyState":0,"status":0,"statusText":"error"}
+        print('获取异常')
         return jsonify(v_dist)
         
 
@@ -1152,122 +1158,6 @@ def list_task():
     mglist = MessageList.query.all()
     return render_template('auth/tast.html', mglist=mglist)
 
-
-
-@auth.route('/qkuplod', methods=['POST'])
-def qkuplod():
-
-    # files = request.files.getlist('qkload')
-
-    files = request.form.getlist('qkload')
-    for file in files:
-        filename = file
-        fanhao = filename.split('.')[0]
-        pattern = re.compile('(?P<No>^[a-zA-Z]+-[0-9]+)(-[a-zA-Z])?$')
-        result = re.search(pattern, fanhao)
-        if not result:
-            flash('{0}命名不符合'.format(filename),'err')
-            continue
-        url = 'http://www.b47w.com/cn/vl_searchbyid.php?&keyword={0}'
-        url = url.format(result.group('No'))
-        # print(url)
-        starttime = time.time()
-        try:
-            req = make_request(url)
-        except Exception as e:
-            flash('抓取失败','err')
-            continue
-        arr = get_video_meg(req)
-        zqtime = time.time()
-        print('抓取信息所花时间：{}'.format(zqtime-starttime))
-
-
-        vid = Movie.query.filter_by(name=str(arr[1])).first()
-        if vid:
-            flash('视频已存在','err')
-            continue
-        c_name = arr[1].split('-')[0]
-        c = Category.query.filter_by(name=c_name).first()
-        if not c:
-            c = Category(
-                pid = 0,
-                name2up = c_name,
-                sortnum = 99
-            )
-            db.session.add(c)
-        
-        sourcedir = get_COPY_FILE_DES()
-        oldpath = searchfile(filename,sourcedir)
-        uuid = get_UPLOADED_FILES_DEST()
-        if arr[4]:
-            try:
-                starttime = time.time()
-                img = checkimgurl(str(arr[4]))
-                print('下载图片时间{}'.format(time.time()-starttime))
-            except Exception as e:
-                img = '/static/upload/image/zd.jpg'
-        else:
-            img = '/static/upload/image/zd.jpg'
-
-        starttime = time.time()
-        video = Movie(
-            title = str(arr[0]),
-            name2up = fanhao,
-            img = img,
-            path = str(arr[1]),
-            category = c,
-            size = os.path.getsize(oldpath),
-            ex_name = filename.split('.')[-1],
-            uuid = uuid
-        )
-        if arr[3]:
-            for a_name in arr[3]:
-                a_obj = Actor.query.filter_by(name=a_name).first()
-                if a_obj:
-                    aid_mt = Movie2Actor(actors=a_obj, movies=video)
-                else:
-                    act = Actor(
-                        name = a_name,
-                        sortnum = 99
-                    )
-                    db.session.add(act)
-                    aid_mt = Movie2Actor(actors=act, movies=video)
-                db.session.add(aid_mt)
-        if arr[2]:
-            for t_name in arr[2]:
-                t_obj = Tag.query.filter_by(name=t_name).first()
-                if t_obj:
-                    tid_mt  = Movie2Tag(tags=t_obj, movies=video)
-                else:
-                    tag_n = Tag(
-                        name = t_name,
-                        sortnum = 99
-                    )
-                    db.session.add(tag_n)
-                    tid_mt = Movie2Tag(tags=tag_n, movies=video)
-                db.session.add(tid_mt)
-        db.session.add(video)
-
-        sets = Settings.query.first()
-        diskp = disklist.get(uuid,None)
-        hashpath = '{}{}'.format(diskp, video.hashpath)
-        pypath = '{}{}'.format(diskp, video.pypath)
-
-        if diskp is None:
-            flash('获取存储失败','err')
-            continue
-
-        if video.splitfile:
-            hashpath = '{}{}'.format(diskp, video.hashpath)
-            movefile(video.id, oldpath,hashpath, move=sets.cpOrmv, status=video.splitfile)
-            
-        else:
-            pypath = '{}{}'.format(diskp, video.pypath)
-            movefile(video.id,oldpath, pypath, move=sets.cpOrmv, status=video.splitfile)
-        db.session.commit()
-        print('添加数据时间{}'.format(time.time()-starttime))
-    
-    return redirect(url_for('auth.list_video'))
 
 
 
@@ -1298,15 +1188,34 @@ def create_perview_img():
 
 @auth.route('/test', methods=['GET'])
 def test():
-    # from sqlalchemy import create_engine
-    # from sqlalchemy.orm import sessionmaker
-    # engine = create_engine(current_app.config['SQLALCHEMY_DATABASE_URI'])
-    # Dbsession = sessionmaker(bind=engine)
-    # dbsesion = Dbsession()
-    # v = dbsesion.query(Movie).first()
 
+    # from lxml import etree
+    # import requests
 
-    return render_template('auth/test2.html')
+    # headers = {
+    #         'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.79 Safari/537.36'
+    #     }
+
+    # url = 'https://www.javbus.com/OKSN-325'
+    # url = 'https://www.javbus.com/DASD-834'
+    # from ..lib.javbus import JavBusModeController
+    # javbus = JavBusModeController()
+    # md = javbus.search_video_message('JUL-515')
+    # if md:
+    #     print(
+    #         md.fanhao,
+    #         md.title,
+    #         md.samle_img,
+    #         md.dtime,
+    #         md.pianshang,
+    #         md.faxing,
+    #         md.tags,
+    #         md.actors,
+    #         md.daoyan,
+    #         md.xilie
+    #         )
+
+    return render_template('test.html')
 
 
 

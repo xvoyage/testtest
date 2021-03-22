@@ -6,7 +6,7 @@ class VideoTime(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     imgurl = db.Column(db.String(254))
     time = db.Column(db.Float)
-    video_id = db.Column(db.Integer, db.ForeignKey('movies.id'))
+    file_id = db.Column(db.Integer, db.ForeignKey('videlfile.id'))
 
 
     def __repr__(self):

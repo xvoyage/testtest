@@ -59,7 +59,7 @@
                 <div>
                 <div  class="imgshow">
                     
-                        <img id="uimg" class="img-responsive" src="{% if form.imgurl.data %}{{form.imgurl.data}}{%else%}/static/upload/image/zd.jpg{% endif %}">
+                        <img id="uimg" class="img-responsive" src="{% if form.imgurl.data %}{{form.imgurl.data}}{%else%}{% endif %}">
                     
                     
                     <!-- <img id="uimg" alt="image" class="img-responsive"> -->
@@ -425,10 +425,7 @@
                       $('#series_text').val(data.series);
                     }
                 }
-                else{
-                    alert('ssss')
-                    var mgs = data.mg;
-                }
+
             });
 
         })

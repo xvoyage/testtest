@@ -1,6 +1,6 @@
 from flask import render_template, redirect, request, url_for, flash, current_app, send_from_directory, jsonify, Response
 from . import main
-from ..models import User, Category, Tag, Actor, Movie, Movie2Actor, Movie2Tag, VideoTime, Myphoto, ImgTag, Photo2Tag, VdFollow, Zimu, ZimuValue, VideoFile, Diskdb
+from ..models import User, Category, Tag, Actor, Movie, Movie2Actor, Movie2Tag, VideoTime, Myphoto, ImgTag, Photo2Tag, Zimu, ZimuValue, VideoFile, Diskdb
 from flask_login import login_user, current_user, login_required
 from .. import  db, disklist
 import re
@@ -10,8 +10,8 @@ import os
 import configparser
 import time
 from  sqlalchemy.sql.expression import func
-from ..lib.javbus import make_request, get_list_mgs, get_movie_mg
-from ..lib.javdb import make_javdb_request, get_list_content,get_video_pages, get_show_main
+# from ..lib.javbus import make_request, get_list_mgs, get_movie_mg
+from ..lib.javdb import JavDbModeController
 import json
 import shutil
 from ..controller.videocontroller import VideoController
@@ -116,16 +116,16 @@ def add_wdf():
 
     if not img or not tm or not wd_id:
         raise 'err'
-    video = Movie.query.filter_by(id=wd_id).first()
+    video_file = VideoFile.query.get(int(wd_id))
     img = upload_base64(img)
-    if not video:
+    if not video_file:
         raise 'err'
     try:
         votime = VideoTime(
             imgurl = img,
             time = float(tm)
         )
-        votime.video = video
+        votime.video_file = video_file
         db.session.add(votime)
         db.session.commit()
     except Exception as e:
@@ -295,83 +295,83 @@ def mlist_video():
 #     return redirect(url_for('auth.list_video'))
 
 
-@main.route('/javbuslist', methods=['GET'])
-def javbuslist():
-    html = {}
-    url = 'https://www.javbus.com/'
-    pg = request.args.get('page')
-    if pg:
-        url = 'https://www.javbus.com/page/{0}'.format(pg)
-    res = make_request(url)
-    if res:
-        html = get_list_mgs(res)
-    return render_template('javbuslist.html', javbusmg = html)
+# @main.route('/javbuslist', methods=['GET'])
+# def javbuslist():
+#     html = {}
+#     url = 'https://www.javbus.com/'
+#     pg = request.args.get('page')
+#     if pg:
+#         url = 'https://www.javbus.com/page/{0}'.format(pg)
+#     res = make_request(url)
+#     if res:
+#         html = get_list_mgs(res)
+#     return render_template('javbuslist.html', javbusmg = html)
 
 
-@main.route('/javbus/<name>', methods=['GET'])
-def javbus(name):
-    url = 'https://www.javbus.com/{0}'.format(name)
-    pg = make_request(url)
-    html = get_movie_mg(pg, url)
-    return render_template('javbus.html', javbusmg = html)
+# @main.route('/javbus/<name>', methods=['GET'])
+# def javbus(name):
+#     url = 'https://www.javbus.com/{0}'.format(name)
+#     pg = make_request(url)
+#     html = get_movie_mg(pg, url)
+#     return render_template('javbus.html', javbusmg = html)
 
-@main.route('/javdb', methods=['GET'])
-def javdb():
-    url = 'https://javdb.com/'
-    reargs = request.full_path
-    if reargs:
-        reargs = reargs.replace('/javdb','')
-        print(reargs)
-        url = 'https://javdb.com/{}'.format(reargs)
+# @main.route('/javdb', methods=['GET'])
+# def javdb():
+#     url = 'https://javdb.com/'
+#     reargs = request.full_path
+#     if reargs:
+#         reargs = reargs.replace('/javdb','')
+#         print(reargs)
+#         url = 'https://javdb.com/{}'.format(reargs)
     
-    print(url)
-    req = make_javdb_request(url)
-    htmldoc = get_list_content(req)
-    pages = get_video_pages(req)
-    return render_template('javdblist.html', javdbmode=htmldoc, pages=pages)
+#     print(url)
+#     req = make_javdb_request(url)
+#     htmldoc = get_list_content(req)
+#     pages = get_video_pages(req)
+#     return render_template('javdblist.html', javdbmode=htmldoc, pages=pages)
 
-@main.route('/javdb/v/<name>', methods=['GET'])
-def javdbshow(name):
-    url = 'https://javdb.com/v/{}'.format(name)
-    req = make_javdb_request(url)
-    md = get_show_main(req)
-    md.uid = name
-    return render_template('javdb.html', javdbmd=md)
+# @main.route('/javdb/v/<name>', methods=['GET'])
+# def javdbshow(name):
+#     url = 'https://javdb.com/v/{}'.format(name)
+#     req = make_javdb_request(url)
+#     md = get_show_main(req)
+#     md.uid = name
+#     return render_template('javdb.html', javdbmd=md)
 
-@main.route('/follow', methods=['GET'])
-def follow_video():
-    uid = request.args.get('uid')
-    if uid:
-        url = 'https://javdb.com/v/{}'.format(uid)
-        req = make_javdb_request(url)
-        md =get_show_main(req)
-        vf = VdFollow(
-            name = md.fanhao,
-            link = url,
-            img = md.samle_img,
-            title = md.title,
-        )
-        db.session.add(vf)
-        db.session.commit()
-        flash('关注成功','success')
-    else:
-        flash('关注失败','err')
-    return redirect(url_for('main.javdbshow', name=uid))
+# @main.route('/follow', methods=['GET'])
+# def follow_video():
+#     uid = request.args.get('uid')
+#     if uid:
+#         url = 'https://javdb.com/v/{}'.format(uid)
+#         req = make_javdb_request(url)
+#         md =get_show_main(req)
+#         vf = VdFollow(
+#             name = md.fanhao,
+#             link = url,
+#             img = md.samle_img,
+#             title = md.title,
+#         )
+#         db.session.add(vf)
+#         db.session.commit()
+#         flash('关注成功','success')
+#     else:
+#         flash('关注失败','err')
+#     return redirect(url_for('main.javdbshow', name=uid))
 
-@main.route('/flist', methods=['GET','POST'])
-def follow_show():
-    fms = VdFollow.query.all()
-    return render_template('follow.html',fms=fms)
+# @main.route('/flist', methods=['GET','POST'])
+# def follow_show():
+#     fms = VdFollow.query.all()
+#     return render_template('follow.html',fms=fms)
 
-@main.route('/del_follow', methods=['GET'])
-@login_required
-def del_follow():
-    fid = request.args.get('id')
-    vf = VdFollow.query.filter_by(id=fid).first()
-    if vf:
-        db.session.delete(vf)
-        db.session.commit()
-    return redirect(url_for('main.follow_show'))
+# @main.route('/del_follow', methods=['GET'])
+# @login_required
+# def del_follow():
+#     fid = request.args.get('id')
+#     vf = VdFollow.query.filter_by(id=fid).first()
+#     if vf:
+#         db.session.delete(vf)
+#         db.session.commit()
+#     return redirect(url_for('main.follow_show'))
 
 # @main.route('/img/1', methods=['GET'])
 # def img_show():
@@ -527,6 +527,21 @@ def zimu_comeplte(id):
     if os.path.exists(zm.hashpath):
         shutil.rmtree(zm.hashpath)
     return url_for('main.zmshow',id=zm.id)
+
+@main.route('/set_currenttime', methods=['GET'])
+@login_required
+def set_currenttime():
+    file_id = request.args.get('file_id')
+    currentime = request.args.get('currentime')
+    if not file_id or not currentime:
+        raise ValueError(u'err')
+    videl_file = VideoFile.query.get(int(file_id))
+    if not videl_file:
+        raise ValueError(u'err')
+    currentime = int(float(currentime))
+    videl_file.currenttime = currentime
+    db.session.add(videl_file)
+    return jsonify({'status':True})
 
 
 

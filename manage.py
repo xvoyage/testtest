@@ -4,7 +4,7 @@ from app import create_app, db, socketio
 from flask_script import Manager, Shell
 from flask_migrate import Migrate, MigrateCommand
 # from app.models import Actor, Category, Movie, Tag, User
-from app.models import User, Category, Tag, Movie, VideoTime, ImgTag, Photo2Tag, Myphoto, Diskdb, Settings, MessageList, VdFollow
+from app.models import User, Category, Tag, Movie, VideoTime, ImgTag, Photo2Tag, Myphoto, Diskdb, Settings, MessageList
 
 app = create_app(os.getenv('FLASK_CONFIG') or 'default')
 manager = Manager(app)
